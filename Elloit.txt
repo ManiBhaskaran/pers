@@ -1,0 +1,59 @@
+http://www.pivottrading.co.in/pages/advancedElliott.php
+high=3834&low=3688&close=3787&open=3802
+
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9
+Cache-Control: max-age=0
+Connection: keep-alive
+Content-Length: 39
+Content-Type: application/x-www-form-urlencoded
+Cookie: HstCfa644484=1545504550274; HstCmu644484=1545504550274; c_ref_644484=https%3A%2F%2Fwww.google.com%2F; HstCnv644484=2; pivottrading=true; HstCns644484=3; __atuvc=8%7C52; __atuvs=5c1f03f10c85ee81007; HstCla644484=1545538079175; HstPn644484=13; HstPt644484=14
+Host: www.pivottrading.co.in
+Origin: http://www.pivottrading.co.in
+Referer: http://www.pivottrading.co.in/pages/advancedElliott.php
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+
+
+http://www.pivottrading.co.in/widgets/widgets/advancedElliot.php
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9
+Cache-Control: max-age=0
+Connection: keep-alive
+Content-Length: 39
+Content-Type: application/x-www-form-urlencoded
+Cookie: HstCfa644484=1545504550274; HstCmu644484=1545504550274; c_ref_644484=https%3A%2F%2Fwww.google.com%2F; HstCnv644484=2; pivottrading=true; HstCns644484=3; HstCla644484=1545539578174; HstPn644484=18; HstPt644484=19; __atuvc=15%7C52; __atuvs=5c1f03f10c85ee8100e
+Host: www.pivottrading.co.in
+Origin: http://www.pivottrading.co.in
+Referer: http://www.pivottrading.co.in/widgets/widgets/advancedElliot.php
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+
+high=3890&low=3616&close=3879&open=3790
+
+
+
+daily2=pd.read_csv('C:\ReadMoneycontrol\Crude\dailyData.csv')
+List_ = list(daily2['Date'])
+List_ = [datetime.datetime.strptime(parse(x).strftime("%m/%d/%Y"), "%m/%d/%Y") for x in List_]
+daily2['Date']=pd.Series([x for x in List_],index=daily2.index)
+daily2['Weekday']=pd.Series([x.weekday() for x in List_],index=daily2.index)
+
+Weekday = daily2.groupby(['Weekday'])['Weekday'].count()
+data1=daily2
+daily2['Close-Low']=np.round(daily2['Close']-daily2['Low'])
+daily2['High-Low']=np.round(daily2['High']-daily2['Low'])
+#daily2['High-Low']=np.round(daily2['High']-daily2['Low'])
+daily2['Ceil']=np.round(daily2['High-Low']/daily2['Close-Low'])+1
+
+daily2['Val1'] = np.where(daily2['High-Low']/daily2['Close-Low']>2, daily2['Close-Low']*daily2['Ceil'], daily2['Close-Low'])
+daily2['Val2'] = np.where(daily2['Val1']>130, daily2['Val1']/3, daily2['Val1'])# changed from 'Val1']/2 to 'Val1']/3
+daily2['Val3'] = np.round(daily2['High']/daily2['Low']*daily2['Close'])
+daily2['BuyP'] = np.round(1.1*daily2['Val2']/4+daily2['Close'])
+daily2['BuyT'] = np.round((daily2['BuyP']+daily2['Val3'])/2)
+daily2['BuySL'] = np.round(daily2['Close']-(1.1*daily2['High-Low']/4))  #=F157-(1.1*R157/4)-Y157
+daily2['SellP']= np.round(daily2['Close']-(1.1*daily2['Val2']/4)) #=F157-(1.1*O157/4)+Y157
+daily2['SellT']= np.round(daily2['Close']-(1.1*daily2['Val2']/math.sqrt(2))) #=F157-(1.1*O157/SQRT(2))+Z157
+daily2['SellSL']= np.round(daily2['Close']+(1.1*daily2['High-Low']/4)) #=F157+(1.1*R157/4)+Y157
