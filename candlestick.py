@@ -894,13 +894,20 @@ def getLiveDataFromZerodha(Symbol,Interval):
 #    global Candle30Min
 #    global Candle15Min
 #    global Candle5Min
+    Symbols={}
+    Symbols["GOLD"]="54015239"
+    Symbols["SILVER"]="53869575"
+    Symbols["ZINC"]="54534407"
+    Symbols["LEAD"]="54533383"
+    
     StrTimeIntervals=['minute','3minute','5minute','15minute','30minute']
     for TimeInterval in StrTimeIntervals:
         if(TimeInterval==Interval):
-            if(Symbol=="GOLD"):
-                SymbolID="54015239"
-            else:
-                SymbolID="53869575"
+            SymbolID=Symbols[Symbol]
+#            if(Symbol=="GOLD"):
+#                SymbolID="54015239"
+#            elif(Symbol=="SILVER"):
+#                SymbolID="53869575"
             if(Interval=="minute"):
                 Candles = requests.get('https://kitecharts-aws.zerodha.com/api/chart/'+SymbolID+'/'+TimeInterval+'?public_token=Pb0MyvJ435vcAjx5fxCTtEV0oD0wdcwT&user_id=RM5678&api_key=kitefront&access_token=mwFtysT9JpZk6B7ZOUH4AqbrJkhUlTnC&from=2019-04-08&to=2019-12-05&ciqrandom=1549306657305') #GOLD
             else:
@@ -920,16 +927,14 @@ def getLiveDataFromZerodha(Symbol,Interval):
             Candle['Hour'] = pd.Series([x.hour for x in List_],index=Candle.index)
             return Candle
 
-def GetEODDataFromMCX(Symbol,PivotType,OHLC):
+def GetEODDataFromMCX(Symbol,PivotType,OHLC,Expiry):
     rURL="https://www.mcxindia.com/backpage.aspx/GetCommoditywiseBhavCopy"
     #PayLoad="{'Symbol':'CRUDEOIL','Expiry':'19FEB2019','FromDate':'','ToDate':'','InstrumentName':'FUTCOM'}"
-    if(Symbol=="GOLD"):
-        PayLoad="{'Symbol':'GOLD','Expiry':'05JUN2019','FromDate':'','ToDate':'','InstrumentName':'FUTCOM'}"
-    else:
-        PayLoad="{'Symbol':'SILVER','Expiry':'03MAY2019','FromDate':'','ToDate':'','InstrumentName':'FUTCOM'}"
-    #PayLoad="{'Symbol':'CRUDEOIL','Expiry':'19MAR2019','FromDate':'','ToDate':'','InstrumentName':'FUTCOM'}"
-    #Data="curr_id=8849&smlID=300060&header=Crude+Oil+WTI+Futures+Historical+Data&st_date=03%2F02%2F2006&end_date=02%2F02%2F2020&interval_sec=Daily&sort_col=date&sort_ord=DESC&action=historical_data"
-    #https://in.investing.com/instruments/HistoricalDataAjax
+    #if(Symbol=="GOLD"):
+    #Symbol="GOLD"
+    #Expiry="03MAY2019"
+    PayLoad="{'Symbol':'ISYMBOL','Expiry':'IEXPIRY','FromDate':'','ToDate':'','InstrumentName':'FUTCOM'}"
+    PayLoad=PayLoad.replace("ISYMBOL",Symbol).replace("IEXPIRY",Expiry)
     PatternRead= requests.post(rURL,
                                       headers={#'Cookie':'adBlockerNewUserDomains=1545933873; optimizelyEndUserId=oeu1545933885326r0.8381196045732737; _ga=GA1.2.1293495785.1545933889; __gads=ID=d6c605f22775c384:T=1545933894:S=ALNI_MbV20pH_Ga4kGvz2QBdrKhnTQtDsg; __qca=P0-530564802-1545933894749; r_p_s_n=1; G_ENABLED_IDPS=google; _gid=GA1.2.2065111802.1547570711; SideBlockUser=a%3A2%3A%7Bs%3A10%3A%22stack_size%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Bi%3A8%3B%7Ds%3A6%3A%22stacks%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Ba%3A3%3A%7Bi%3A0%3Ba%3A3%3A%7Bs%3A7%3A%22pair_ID%22%3Bi%3A49774%3Bs%3A10%3A%22pair_title%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22pair_link%22%3Bs%3A32%3A%22%2Fcommodities%2Fcrude-oil%3Fcid%3D49774%22%3B%7Di%3A1%3Ba%3A3%3A%7Bs%3A7%3A%22pair_ID%22%3Bs%3A4%3A%228849%22%3Bs%3A10%3A%22pair_title%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22pair_link%22%3Bs%3A22%3A%22%2Fcommodities%2Fcrude-oil%22%3B%7Di%3A2%3Ba%3A3%3A%7Bs%3A7%3A%22pair_ID%22%3Bs%3A4%3A%228830%22%3Bs%3A10%3A%22pair_title%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22pair_link%22%3Bs%3A17%3A%22%2Fcommodities%2Fgold%22%3B%7D%7D%7D%7D; PHPSESSID=t127q9ns2htigac1b5j8lr2tdg; geoC=IN; comment_notification_204870192=1; gtmFired=OK; StickySession=id.51537812219.831in.investing.com; billboardCounter_56=1; nyxDorf=MDFkNWcvMG03YGBtN3pmZTJnNGs0LTI5YGY%3D; _fbp=fb.1.1547680426904.1355133887; ses_id=Nng3dm5hMDg0cGpsNGU1NzRhZDcyMmFjYmJhazo%2FZHJlcTQ6ZTIwdmFuaiRubTklMjQ3NjM3ZmYxM2JrO2xnMjZlNzZuPTBtNDdqZTQzNWE0Y2Q5MjJhamIxYWo6aWQ%2FZTc0N2UxMGZhZGpgbjM5YzIgNyszd2Z3MWNiMjt6ZyA2OTd2bj0wPzRhajA0NTVlNGFkOTI1YTJiamEwOmtkfGUu',
                                                'Referer':'https://www.mcxindia.com/market-data/bhavcopy',
@@ -1303,8 +1308,9 @@ def drawBreakOutChart(Data,FileName,quotes,BreakOutTime,BreakOutPrice):
             width = 1)
     ) 
     #print(BreakOutTime)
-    BreakOutLines.append(CreateVLines(BreakOutTime,BreakOutPrice-150,BreakOutPrice+150,'rgb(255, 0, 0)',1))
-    #(date1,Y1,Y2,color,style):
+    #BreakOutLines.append(CreateVLines(BreakOutTime,BreakOutPrice-150,BreakOutPrice+150,'rgb(255, 0, 0)',1))
+    BreakOutLines.append(CreateVLines(BreakOutTime,BreakOutPrice-(BreakOutPrice*.003),BreakOutPrice+(BreakOutPrice*.003),'rgb(255, 0, 0)',1))
+	#(date1,Y1,Y2,color,style):
     data=[trace,trace0, trace1, trace2, trace3, trace4, trace5,trace6, trace7]
     layout = dict(title = 'Average High and Low Temperatures in New York',
                   xaxis = dict(title = 'Month'),
