@@ -1,4 +1,5 @@
 import re
+import math
 import requests
 import pandas as pd
 import datetime
@@ -18,7 +19,8 @@ from plotly.tools import FigureFactory as FF
 __builders = dict()
 __default_ohlc = ['open', 'high', 'low', 'close']
 Profit=dict()
-
+BreakOutSignals=[]
+BreakOutLines=[]
 
 def __get_file_name(class_name):
     res = re.findall('[A-Z][^A-Z]*', class_name)
@@ -699,6 +701,32 @@ def CreateLinesV1(date1,date2,value,color,style):
     ShapesL['line']=Line
     return ShapesL
 
+def CreateVLines(date1,Y1,Y2,color,style):
+    Lines=[]
+    Line={}
+    ShapesL={}
+    ShapesL['x0']=date1
+    ShapesL['y0']=Y1
+    ShapesL['x1']=date1
+    ShapesL['y1']=Y2
+    ShapesL['type']="line"
+    ShapesL['opacity']=1
+    Line['color']=color
+    Line['width']=2
+    if(style==1):
+        Line['dash']='dot'
+    elif(style==2):
+        Line['dash']='dash'
+    elif(style==3):
+        Line['dash']='longdash'
+    elif(style==4):
+        Line['dash']='dashdot'
+    else:
+        Line['dash']='solid'
+    #Line['style']="dot" #dashdot #("solid", "dot", "dash", "longdash", "dashdot", or    "longdashdot")
+    ShapesL['line']=Line
+    return ShapesL
+
 def CreateAnnotations(date1,y,text,color,arrow):
     Annotations={}
     Annotations['x']=date1#CurrentDate(date1)
@@ -935,92 +963,32 @@ def GetEODDataFromMCX(Symbol,PivotType,OHLC):
 				
 			
     
-def DisplayCandles(CrudeData,DateIndex,Candle30Min,Candle15Min,Symbol,OverRide):
-#    global ResultMerge
-#    global AnnotationsAr
-#    getLiveData()    
-    
-    date1=parse(CrudeData.iloc[DateIndex-1]['Date'].strftime("%Y-%m-%d 04:00"))
+def DisplayCandles(CrudeData,DateIndex,Candle30Min,Candle15Min,Symbol,OverRide,BreakOut,BreakOutData):
+
+    if(DateIndex==0):
+        date1=parse(N1(CrudeData.iloc[DateIndex]['Date'],"1D","+").strftime("%Y-%m-%d 04:00"))
+    else:
+        date1=parse(CrudeData.iloc[DateIndex-1]['Date'].strftime("%Y-%m-%d 04:00"))
     print(date1)
     if(OverRide==True):
         CurrentDate1=CrudeData.iloc[DateIndex]['Date']
         if((CurrentDate1.weekday()==4) ):
             date1=parse(N1(CurrentDate1,"3D","+").strftime("%Y-%m-%d 04:00"))
-        #date1= parse("2019-02-04 04:00")
-        #d2= parse("2019-01-30 03:00")
-    #print("After " )
-    
-    #date1 = parse("2019-01-29 04:00")
-    #date5 = parse("2019-01-30 12:30")
+
     date2 = N1(date1,"23H","+")
     
     print( str(date1) + " ----- " + str(date2))
     
     date3=parse(CrudeData.iloc[DateIndex]['Date'].strftime("%Y-%m-%d 04:00"))
     date4 = N1(date3,"23H","+")
-    #date4 = parse("2019-01-30 12:30")
-    
-    
-    #date1=N1(date1,"1D","-")
-    #date2=N1(date2,"1D","-")
-    
-    
-    # every monday
+
     
     quotes=Candle30Min    
     quotes15=Candle15Min
-    
-    #CrudeDf30Min.dtypes
-    #quotes = pd.read_csv('SampleYData.csv',
-    #                     index_col=0,
-    #                     parse_dates=True,
-    #                     infer_datetime_format=True)
-    
-    # select desired range of dates
+ 
     quotes = quotes[(quotes['Date'] >= date1) & (quotes['Date'] <= date2)]
     quotes15=quotes15[(quotes15['Date'] >= date1) & (quotes15['Date'] <= date2)]
-    
-#    iquotes = Candle30Min[(Candle30Min['Date'] >= date3) & (Candle30Min['Date'] <= date4)]
-#    h=quotes['high'].max()
-#    l=quotes['low'].min()
-#    
-#    
-#    
-#    ih=iquotes['high'].max()
-#    il=iquotes['low'].min()
-#    ic=iquotes['close'].iloc[-1]
-#    iChartData=getPivots(ih,il,ic)
-#    
-#    #Merging the values to the Parent data
-#    iChartData1={}
-#    #iChartData1=iChartData
-#    iChartData1['Date']=CrudeData.iloc[DateIndex]['Date'].strftime("%Y-%m-%d")#CrudeData.iloc[3+DateIndex]['Date']
-#    iChartData1['AClose']=ic
-#    iChartData1['APivot']=iChartData['Pivot']
-#    i=1
-#    while(i<=6):
-#        iChartData1['AH'+str(i)]=iChartData['H'+str(i)]
-#        iChartData1['AL'+str(i)]=iChartData['L'+str(i)]
-#        i=i+1
-#    
-#    a=[]
-#    a.append(iChartData1)
-#    #pd.read_json(json.dumps(a)).dtypes
-#    TestResult=pd.read_json(pd.Series(a).to_json(orient='values'))
-#    ResultMerge=CrudeData.merge(TestResult)
-    #ResultMerge=CrudeData.merge(pd.read_json(json.dumps(a)))
-    #ResultMerge.iloc[0]
-    
-    #.......
-    
-#    iPivot=iChartData['Pivot']
-#    iPriceList=list(iChartData.values())
-#    iLowerList=iPriceList[7:]
-#    iHigherList=iPriceList[1:7]
-#    
-    
-    
-    
+
 
     
     Lines=[]
@@ -1147,25 +1115,8 @@ def DisplayCandles(CrudeData,DateIndex,Candle30Min,Candle15Min,Symbol,OverRide):
     AxisValue=[]
     AxisX=[]
 
-    
-    
-    
-        
-        
     zi=0
-    #while(zi<len(AxisValue)):
-    #    AxisX.append(CurrentDate(date1))
-    #    zi=zi+1
-    
-    
-#    List_ = list(quotes['Date'])
-#    #List_ = [N1(N1(x,"5H","+"),"30M","+") for x in List_]
-#        
-#    trace = go.Candlestick(x=List_,
-#                           open=quotes['open'],
-#                           high=quotes['high'],
-#                           low=quotes['low'],
-#                           close=quotes['close'])
+ 
 
     List_ = list(quotes15['Date'])
     trace = go.Candlestick(x=List_,
@@ -1174,7 +1125,15 @@ def DisplayCandles(CrudeData,DateIndex,Candle30Min,Candle15Min,Symbol,OverRide):
                            low=quotes15['low'],
                            close=quotes15['close'])    
 
-    data=[trace,trace0]
+    if(BreakOut==True):
+        data=[trace,trace0]
+        bi=0
+        Lines.append(BreakOutLines[0])
+        while(bi<len(BreakOutData)):
+            data.append(BreakOutData[bi])
+            bi=bi+1
+    else:
+        data=[trace,trace0]
 
     Layout["shapes"]=Lines
     Layout["annotations"]=AnnotationsAr
@@ -1191,3 +1150,168 @@ def DisplayCandles(CrudeData,DateIndex,Candle30Min,Candle15Min,Symbol,OverRide):
     #plot(fig,filename="Chart.html")
     plot(fig, filename=Symbol+"-IN-"+date1.strftime("%b-%d")+"V2.html",auto_open=False)
     print(Symbol+"-IN-"+date1.strftime("%b-%d")+"V2.html")
+
+
+
+
+
+
+def BreakOut(previousDayHigh,previousDayLow,todayHigh,todayLow,i):
+    #global Signals
+    Signal={}
+#previousDayHigh=199.5
+#previousDayLow=194.4
+#todayHigh=194.65
+#todayLow=192.75
+    profitPercent =0.7*.01
+    stopLossPercent=0.8*.01
+    mulFactor1 = 0.45
+    mulFactor2 = 0.75
+    factor1 = mulFactor1 * (previousDayHigh - previousDayLow)
+    factor2 = mulFactor2 * (previousDayHigh - previousDayLow)
+    buyAt =0
+    buyTarget =0
+    buyStopLoss =0
+    sellAt =0
+    sellTarget =0
+    sellStopLoss =0
+    NoData=False
+    message=str(i)+" ==> "
+    if ((todayHigh - todayLow) < factor1):
+        buyAt = todayLow + factor1;
+        buyTarget = todayLow + factor1 + (todayLow + factor1) * profitPercent;
+        buyStopLoss = todayLow + factor1 - (todayLow + factor1) * stopLossPercent;
+        sellAt = todayHigh - factor1;
+        sellTarget = todayHigh - factor1 - (todayHigh - factor1) * profitPercent;
+        sellStopLoss = todayHigh - factor1 + (todayHigh - factor1) * stopLossPercent
+    elif(((todayHigh - todayLow) > factor1) and ((todayHigh - todayLow) < factor2)):
+        buyAt = todayLow + factor2;
+        buyTarget = todayLow + factor2 + (todayLow + factor2) * profitPercent;
+        buyStopLoss = todayLow + factor2 - (todayLow + factor2) * stopLossPercent;
+        sellAt = todayHigh - factor2;
+        sellTarget = todayHigh - factor2 - (todayHigh - factor2) * profitPercent;
+        sellStopLoss = todayHigh - factor2 + (todayHigh - factor2) * stopLossPercent
+    else:
+        NoData=True
+    Signal["WHigh"]=todayHigh
+    Signal["WLow"]=todayLow
+    Signal['Buy']=buyAt
+    Signal['BuyT']=buyTarget
+    Signal['BuySL']=buyStopLoss
+    Signal['Sell']=sellAt
+    Signal['SellT']=sellTarget
+    Signal['SellSL']=sellStopLoss
+    message = message + "\tBuy At " + str(math.ceil(buyAt * 100) / 100) + ". Target = " + str(math.ceil(buyTarget * 100) / 100) + ". Stoploss = " + str(math.ceil(buyStopLoss * 100) / 100) + "\n"
+    message = message + "\t\tSell At " + str(math.ceil(sellAt * 100) / 100) + ". Target = " + str(math.ceil(sellTarget * 100) / 100) + ". Stoploss = " + str(math.ceil(sellStopLoss * 100) / 100) + ""
+    #print(message)
+    if(buyAt!=0):
+        BreakOutSignals.append(Signal)
+        #print(message)
+    return NoData
+
+def drawBreakOutChart(Data,FileName,quotes,BreakOutTime,BreakOutPrice):
+    # Add data
+    
+    
+
+    #date1=N1(parse(LeadData.iloc[DateIndex]['Date'].strftime("%Y-%m-%d 04:00")),"1D","+") #For India Data
+    
+    month = list(Data.index)[:-1]
+    Buy= list(Data['Buy'])[:-1]
+    BuyT= list(Data['BuyT'])[:-1]
+    BuySL = list(Data['BuySL'])[:-1]
+    Sell = list(Data['Sell'])[:-1]
+    SellT = list(Data['SellT'])[:-1]
+    SellSL = list(Data['SellSL'])[:-1]
+    WLow = list(Data['WLow'])[:-1]
+    WHigh = list(Data['WHigh'])[:-1]
+    List_=list(quotes['Date'])
+    month=List_
+    trace = go.Candlestick(x=List_,
+                           open=quotes['open'],
+                           high=quotes['high'],
+                           low=quotes['low'],
+                           close=quotes['close'])
+    
+    # Create and style traces
+    trace0 = go.Scatter(
+        x = month,
+        y = Buy,
+        name = 'Buy',
+        line = dict(
+            color = ('rgb(0, 255, 0)'),
+            width = 1)
+    )
+    trace1 = go.Scatter(
+        x = month,
+        y = BuyT,
+        name = 'BuyT',
+        line = dict(
+            color = ('rgb(22, 255, 0)'),
+            width = 4,
+            dash = 'dash')
+    )
+    trace2 = go.Scatter(
+        x = month,
+        y = BuySL,
+        name = 'BuySL',
+        line = dict(
+            color = ('rgb(0, 255, 0)'),
+            width = 4,
+            dash = 'dot') # dash options include 'dash', 'dot', and 'dashdot'
+    )
+    trace3 = go.Scatter(
+        x = month,
+        y = Sell,
+        name = 'Sell',
+        line = dict(
+            color = ('rgb(255, 0, 0)'),
+            width = 1)
+    )
+    trace4 = go.Scatter(
+        x = month,
+        y = SellT,
+        name = 'SellT',
+        line = dict(
+            color = ('rgb(255, 0, 0)'),
+            width = 4,
+            dash = 'dash')
+    )
+    trace5 = go.Scatter(
+        x = month,
+        y = SellSL,
+        name = 'SellSL',
+        line = dict(
+            color = ('rgb(255, 0, 0)'),
+            width = 4,
+            dash = 'dot')
+    )
+    trace6 = go.Scatter(
+        x = month,
+        y = WLow,
+        name = 'WLow',
+        line = dict(
+            color = ('rgb(1,1,1)'),
+            width = 1)
+    )
+    trace7 = go.Scatter(
+        x = month,
+        y = WHigh,
+        name = 'WHigh',
+        line = dict(
+            color = ('rgb(200,200,200)'),
+            width = 1)
+    ) 
+    #print(BreakOutTime)
+    BreakOutLines.append(CreateVLines(BreakOutTime,BreakOutPrice-150,BreakOutPrice+150,'rgb(255, 0, 0)',1))
+    #(date1,Y1,Y2,color,style):
+    data=[trace,trace0, trace1, trace2, trace3, trace4, trace5,trace6, trace7]
+    layout = dict(title = 'Average High and Low Temperatures in New York',
+                  xaxis = dict(title = 'Month'),
+                  yaxis = dict(title = 'Temperature (degrees F)'),
+                  )
+    
+    fig = dict(data=data, layout=layout)
+    #plot(fig, filename=FileName,auto_open=True)
+    
+    return [trace0, trace1, trace2, trace3, trace4, trace5,trace6, trace7]

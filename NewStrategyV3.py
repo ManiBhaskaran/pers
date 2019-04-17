@@ -4,7 +4,7 @@ Created on Wed Feb  6 08:01:35 2019
 
 @author: lalitha
 """
-
+import math
 from candlestick import candlestick
 import datetime
 import pandas as pd
@@ -391,9 +391,76 @@ def DisplayCandles1(CrudeData,DateIndex,Candle30Min,Candle15Min,Symbol):
 #CrudeData=Data1.merge(Pivotdf)
 #CrudeData.iloc[1]
 #
+    
+def ChartWithBreakOut(History,DataIndex,Candle15Min,Candle30Min,Symbol):
+    #ChartWithBreakOut(GoldHistoryV1,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V1")
+#    History=GoldHistoryV1
+#    Candle15Min=GoldCandle15Min
+#    Candle30Min=GoldCandle30Min
+    #Symbol=Symbol+"V1"
+    candlestick.BreakOutSignals=[]
+    candlestick.BreakOutLines=[]
+    Temp=Candle15Min
+    if(DataIndex==0):
+        Date1=parse(candlestick.N1(History.iloc[DataIndex]['Date'],"1D","+").strftime("%Y-%m-%d 04:00"))
+        Date2 = candlestick.N1(Date1,"23H","+")
+        Temp1=Temp[(Temp['Date']>Date1) & (Temp['Date']<Date2)]
+    else:
+        Date1=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 00:00")
+        Date2=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 23:30")
+        Temp1=Temp[(Temp['Date']>parse(Date1)) & (Temp['Date']<parse(Date2))]
+    quotes=Temp1
+    PHigh=History.iloc[DataIndex]['High']
+    PLow=History.iloc[DataIndex]['Low']
+    ii=1
+    Signals=[]
+    Breakout=False
+    Index=0
+    while(ii<len(quotes)):
+        Dlow=min(list(quotes['low'])[0:ii])
+        Dhigh=max(list(quotes['high'])[0:ii])
+        ii=ii+1
+        if(candlestick.BreakOut(PHigh,PLow,Dhigh,Dlow,quotes.iloc[ii-1]['Date'])==True):
+            if(Index==0):
+                #print( " - " +str(quotes.iloc[ii-1]['Date'])+" Breakout Signal")
+                Index=ii-1
+            Breakout=True            
+    BreakOutChartData=[]
+    if(Breakout):
+        print( " - " +str(quotes.iloc[Index-1]['Date'])+" Breakout Signal")
+        BreakOutData=pd.DataFrame(candlestick.BreakOutSignals)
+        BreakOutChartData=candlestick.drawBreakOutChart(BreakOutData,Symbol+"V1.html",quotes,quotes.iloc[Index-1]['Date'],quotes.iloc[Index-1]['close'])
+    candlestick.DisplayCandles(History,DataIndex,Candle30Min,Candle15Min,Symbol,False,Breakout,BreakOutChartData)
+    
+    
+def getDoji(Candle1Min,DataIndex,History,Percent):
+    Temp=Candle1Min[(Candle1Min['Doji']==True) & (Candle1Min['open']==Candle1Min['close'])]
+    if(DataIndex==0):
+        Date1=parse(candlestick.N1(History.iloc[DataIndex]['Date'],"1D","+").strftime("%Y-%m-%d 04:00"))
+        Date2 = candlestick.N1(Date1,"23H","+")
+        Temp1=Temp[(Temp['Date']>Date1) & (Temp['Date']<Date2)]
+    else:
+        Date1=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 00:00")
+        Date2=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 23:30")
+        Temp1=Temp[(Temp['Date']>parse(Date1)) & (Temp['Date']<parse(Date2))]
+        
+    History.iloc[DataIndex]['Date']
+    
+    i=0
+    tolerance=round(History.iloc[DataIndex]['Open']*Percent/10)
+    while(i<len(Temp1)):
+        for Range in list(History.iloc[DataIndex])[6:]:
+            O=Temp1.iloc[i]['open']
+            H=Temp1.iloc[i]['high']
+            L=Temp1.iloc[i]['low']
+            if(Range-tolerance <= O <= Range+tolerance):       
+                print(str(Range) + " - " + str(Temp1.iloc[i]['Date'])+ " - " + str(O))
+        i=i+1
+
 Symbol="GOLD"
 PivotType="D"
 OHLC=4
+DataIndex=3
 #Symbol="Silver" 
 GoldHistoryV1=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC)
 GoldHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3)
@@ -402,12 +469,13 @@ GoldHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4)
 GoldCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
 GoldCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
 GoldCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
+ChartWithBreakOut(GoldHistoryV1,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V1")
 DataIndex=1
-candlestick.DisplayCandles(GoldHistoryV1,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V1",False)
-candlestick.DisplayCandles(GoldHistoryV2,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V2",False)
-candlestick.DisplayCandles(GoldHistoryV3,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V3",False)
-candlestick.DisplayCandles(GoldHistoryV4,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V4",False)
-
+#candlestick.DisplayCandles(GoldHistoryV1,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V1",False)
+#candlestick.DisplayCandles(GoldHistoryV2,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V2",False)
+#candlestick.DisplayCandles(GoldHistoryV3,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V3",False)
+#candlestick.DisplayCandles(GoldHistoryV4,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V4",False)
+#
 Symbol="Silver"
 PivotType="D"
 OHLC=4
@@ -417,49 +485,54 @@ SilverHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3)
 SilverHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3)
 SilverHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4)
 SilverCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
+SilverCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
+SilverCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
+SilverCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
 SilverCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
-#DataIndex=2
-candlestick.DisplayCandles(SilverHistory,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V1",False)
-candlestick.DisplayCandles(SilverHistoryV2,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V2",False)
-candlestick.DisplayCandles(SilverHistoryV3,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V3",False)
-candlestick.DisplayCandles(SilverHistoryV4,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V4",False)
+ChartWithBreakOut(SilverHistory,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V1")
+##DataIndex=2
+#candlestick.DisplayCandles(SilverHistory,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V1",False)
+#candlestick.DisplayCandles(SilverHistoryV2,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V2",False)
+#candlestick.DisplayCandles(SilverHistoryV3,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V3",False)
+#candlestick.DisplayCandles(SilverHistoryV4,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V4",False)
+#
+#
+#################
+#GoldCandle1Min=candlestick.doji(GoldCandle1Min)
+#GoldCandle1Min=candlestick.doji_star(GoldCandle1Min)
+#GoldCandle1Min=candlestick.gravestone_doji(GoldCandle1Min)
+#GoldCandle1Min=candlestick.dragonfly_doji(GoldCandle1Min)
+#
+#SilverCandle1Min=candlestick.doji(SilverCandle1Min)
+#SilverCandle3Min=candlestick.doji(SilverCandle3Min)
+#SilverCandle5Min=candlestick.doji(SilverCandle5Min)
+#SilverCandle1Min=candlestick.doji_star(SilverCandle1Min)
+#SilverCandle1Min=candlestick.gravestone_doji(SilverCandle1Min)
+#SilverCandle1Min=candlestick.dragonfly_doji(SilverCandle1Min)
+#
+##GoldCandle1Min[GoldCandle1Min['Doji']==True]
+##GoldCandle1Min[GoldCandle1Min['DojiStar']==True]
+##GoldCandle1Min[GoldCandle1Min['GravestoneDoji']==True]
+##GoldCandle1Min[GoldCandle1Min['DragonflyDoji']==True]
+#getDoji(GoldCandle1Min,DataIndex,GoldHistoryV2,0.003)
+#getDoji(SilverCandle1Min,DataIndex,SilverHistoryV2,0.003)
+#getDoji(SilverCandle1Min,DataIndex,SilverHistoryV3,0.003)
+#getDoji(SilverCandle1Min,DataIndex,SilverHistoryV4,0.003)
+#getDoji(SilverCandle3Min,DataIndex,SilverHistoryV2,0.003*3)
+#getDoji(SilverCandle5Min,DataIndex,SilverHistoryV2,0.003*5)
+#
+
+#Candle1Min=GoldCandle15Min
+#History=GoldHistoryV1
+#Temp=GoldCandle15Min
 
 
-################
-GoldCandle1Min=candlestick.doji(GoldCandle1Min)
-GoldCandle1Min=candlestick.doji_star(GoldCandle1Min)
-GoldCandle1Min=candlestick.gravestone_doji(GoldCandle1Min)
-GoldCandle1Min=candlestick.dragonfly_doji(GoldCandle1Min)
+#    drawChart("LeadTest-"+quotes.iloc[Index]['Date'].strftime("%d-%b")+".html")
+#ll1=ll1+1 
+#candlestick.BreakOutLines    
+#GoldCandle1Min.columns
 
-GoldCandle1Min[GoldCandle1Min['Doji']==True]
-GoldCandle1Min[GoldCandle1Min['DojiStar']==True]
-GoldCandle1Min[GoldCandle1Min['GravestoneDoji']==True]
-GoldCandle1Min[GoldCandle1Min['DragonflyDoji']==True]
-
-Temp=GoldCandle1Min[(GoldCandle1Min['Doji']==True) & (GoldCandle1Min['open']==GoldCandle1Min['close'])]
-
-DataIndex=2
-Date1=GoldHistoryV2.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 00:00")
-Date2=GoldHistoryV2.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 23:30")
-Temp1=Temp[(Temp['Date']>parse(Date1)) & (Temp['Date']<parse(Date2))]
-GoldHistoryV2.iloc[DataIndex]['Date']
-
-
-i=0
-#Tolerance=
-tolerance=round(GoldHistoryV2.iloc[DataIndex]['Open']*0.003/10)
-#if((ResultMerge.iloc[0][CELL]-tolerance <= Lastlow <= ResultMerge.iloc[0][CELL]+tolerance) | (ResultMerge.iloc[0][CELL]-tolerance <= Lastclose <= ResultMerge.iloc[0][CELL]+tolerance)):
-while(i<len(Temp1)):
-    for Range in list(GoldHistoryV2.iloc[DataIndex])[6:]:
-        O=Temp1.iloc[i]['open']
-        H=Temp1.iloc[i]['high']
-        L=Temp1.iloc[i]['low']
-        if(Range-tolerance <= O <= Range+tolerance):       
-            print(str(Range) + " - " + str(Temp1.iloc[i]['Date'])+ " - " + str(O))
-    i=i+1
-
-
-GoldCandle1Min.columns
+#candlestick.BreakOut(PHigh,PLow,31865,31719,quotes.iloc[ii-1]['Date'])
 ###########
 
 #TSilver=SilverCandle15Min[['Date','open']]
