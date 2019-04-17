@@ -434,6 +434,7 @@ def ChartWithBreakOut(History,DataIndex,Candle15Min,Candle30Min,Symbol):
     
     
 def getDoji(Candle1Min,DataIndex,History,Percent):
+    
     Temp=Candle1Min[(Candle1Min['Doji']==True) & (Candle1Min['open']==Candle1Min['close'])]
     if(DataIndex==0):
         Date1=parse(candlestick.N1(History.iloc[DataIndex]['Date'],"1D","+").strftime("%Y-%m-%d 04:00"))
@@ -453,8 +454,16 @@ def getDoji(Candle1Min,DataIndex,History,Percent):
             O=Temp1.iloc[i]['open']
             H=Temp1.iloc[i]['high']
             L=Temp1.iloc[i]['low']
-            if(Range-tolerance <= O <= Range+tolerance):       
-                print(str(Range) + " - " + str(Temp1.iloc[i]['Date'])+ " - " + str(O))
+            if(Range-tolerance <= O <= Range+tolerance):
+                #print(str(Range) + " - " + str(Temp1.iloc[i]['Date'])+ " - " + str(O) + " - " + str(i))
+                indx=Temp1.index[i]
+                #print(indx)
+                #print(Temp1.iloc[i].Index)
+                if((indx-10)>0):
+                    Highs=Candle1Min.iloc[indx-10:indx-1]['high'].max()
+                    #print(Candle1Min.iloc[indx-10:indx]['high'])
+                    Lows=Candle1Min.iloc[indx-10:indx-1]['low'].max()                    
+                    print(str(Range) + " - " + str(Temp1.iloc[i]['Date'])+ " - " + str(O) + " - " + str(Highs) +" - "+str(H>Highs) + " - " + str(Lows)+" - "+ str(L<Lows))
         i=i+1
 
 Symbol="GOLD"
