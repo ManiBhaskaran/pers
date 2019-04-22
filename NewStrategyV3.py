@@ -429,10 +429,33 @@ def ChartWithBreakOut(History,DataIndex,Candle15Min,Candle30Min,Symbol):
     if(Breakout):
         print( " - " +str(quotes.iloc[Index-1]['Date'])+" Breakout Signal")
         BreakOutData=pd.DataFrame(candlestick.BreakOutSignals)
-        BreakOutChartData=candlestick.drawBreakOutChart(BreakOutData,Symbol+"V1.html",quotes,quotes.iloc[Index-1]['Date'],quotes.iloc[Index-1]['close'])
+        #BreakOutChartData=candlestick.drawBreakOutChart(BreakOutData,Symbol+"V1.html",quotes,quotes.iloc[Index-1]['Date'],quotes.iloc[Index-1]['close'])
+    Breakout=False
     candlestick.DisplayCandles(History,DataIndex,Candle30Min,Candle15Min,Symbol,False,Breakout,BreakOutChartData)
     
+def getSpecificData(History,Temp,DataIndex):
+    if(DataIndex==0):
+        Date1=parse(candlestick.N1(History.iloc[DataIndex]['Date'],"1D","+").strftime("%Y-%m-%d 04:00"))
+        Date2 = candlestick.N1(Date1,"23H","+")
+        Temp1=Temp[(Temp['Date']>Date1) & (Temp['Date']<Date2)]
+    else:
+        Date1=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 00:00")
+        Date2=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 23:30")
+        Temp1=Temp[(Temp['Date']>parse(Date1)) & (Temp['Date']<parse(Date2))]
+    return Temp1   
+
+def isInRange(History,DateIndex,Value,AllList,decimal,percentage):
+    fPH=History.iloc[DateIndex]['High']
+    fPL=History.iloc[DateIndex]['Low']
+    Range=fPH-fPL
     
+    tolerance=round(Range*percentage,decimal)
+    for List in AllList:
+        if(List-tolerance <= round(Value,decimal) <= List+tolerance):
+            #print(str(Range*percentage)+" = " + str(List))
+            return True
+    return False
+        
 def getDoji(Candle1Min,DataIndex,History,Percent):
     
     Temp=Candle1Min[(Candle1Min['Doji']==True) & (Candle1Min['open']==Candle1Min['close'])]
@@ -448,7 +471,9 @@ def getDoji(Candle1Min,DataIndex,History,Percent):
     History.iloc[DataIndex]['Date']
     
     i=0
-    tolerance=round(History.iloc[DataIndex]['Open']*Percent/10,2)
+    #tolerance=round(History.iloc[DataIndex]['Open']*Percent/10,2)
+    Range=History.iloc[DataIndex]['High']-History.iloc[DataIndex]['Low']
+    tolerance=round(Range*Percent,2)
     while(i<len(Temp1)):
         for Range in list(History.iloc[DataIndex])[6:]:
             O=Temp1.iloc[i]['open']
@@ -466,15 +491,16 @@ def getDoji(Candle1Min,DataIndex,History,Percent):
                     print(str(Range) + " - " + str(Temp1.iloc[i]['Date'])+ " - " + str(O) + " - " + str(Highs) +" - "+str(H>Highs) + " - " + str(Lows)+" - "+ str(L<Lows))
         i=i+1
 
-Symbol="GOLD"
+
 GoldExpiry="05JUN2019"
 SilverExpiry="03MAY2019"
 ZincExpiry="30APR2019"
 LeadExpiry="30APR2019"
 PivotType="D"
 OHLC=4
-DataIndex=4
+DataIndex=11
 #Symbol="Silver" 
+Symbol="GOLD"
 GoldHistoryV1=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC,GoldExpiry)
 GoldHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3,GoldExpiry)
 GoldHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3,GoldExpiry)
@@ -484,7 +510,11 @@ GoldCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
 GoldCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
 GoldCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
 GoldCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
-#ChartWithBreakOut(GoldHistoryV1,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V1")
+ChartWithBreakOut(GoldHistoryV1,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V1")
+ChartWithBreakOut(GoldHistoryV2,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V2")
+ChartWithBreakOut(GoldHistoryV3,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V3")
+ChartWithBreakOut(GoldHistoryV4,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V4")
+
 
 
 Symbol="LEAD"
@@ -523,6 +553,9 @@ SilverCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
 SilverCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
 SilverCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
 ChartWithBreakOut(SilverHistory,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V1")
+ChartWithBreakOut(SilverHistoryV2,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V2")
+ChartWithBreakOut(SilverHistoryV3,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V3")
+ChartWithBreakOut(SilverHistoryV4,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V4")
 ##DataIndex=2
 #candlestick.DisplayCandles(SilverHistory,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V1",False)
 #candlestick.DisplayCandles(SilverHistoryV2,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V2",False)
@@ -535,13 +568,32 @@ GoldCandle1Min=candlestick.doji(GoldCandle1Min)
 GoldCandle3Min=candlestick.doji(GoldCandle3Min)
 GoldCandle5Min=candlestick.doji(GoldCandle5Min)
 GoldCandle15Min=candlestick.doji(GoldCandle15Min)
+GoldCandle30Min=candlestick.doji(GoldCandle30Min)
 GoldCandle1Min=candlestick.doji_star(GoldCandle1Min)
 GoldCandle1Min=candlestick.gravestone_doji(GoldCandle1Min)
 GoldCandle1Min=candlestick.dragonfly_doji(GoldCandle1Min)
 
+#GoldCandle3Min=candlestick.doji_star(GoldCandle3Min)
+#GoldCandle3Min=candlestick.gravestone_doji(GoldCandle3Min)
+#GoldCandle3Min=candlestick.dragonfly_doji(GoldCandle3Min)
+
+
+#GoldCandle5Min=candlestick.doji_star(GoldCandle5Min)
+#GoldCandle5Min=candlestick.gravestone_doji(GoldCandle5Min)
+#GoldCandle5Min=candlestick.dragonfly_doji(GoldCandle5Min)
+
+Candle1Min=SilverCandle1Min
+Candle1Min.columns
+#Temp=Candle1Min[(Candle1Min['DojiStar']==True)] & (Candle1Min['open']==Candle1Min['close'])]
+#Temp=Candle1Min[(Candle1Min['DragonflyDoji']==True)]# & (Candle1Min['open']==Candle1Min['close'])]
+#Temp=Candle1Min[(Candle1Min['GravestoneDoji']==True) & (Candle1Min['open']==Candle1Min['close'])]
+
+
 SilverCandle1Min=candlestick.doji(SilverCandle1Min)
 SilverCandle3Min=candlestick.doji(SilverCandle3Min)
 SilverCandle5Min=candlestick.doji(SilverCandle5Min)
+SilverCandle15Min=candlestick.doji(SilverCandle15Min)
+SilverCandle30Min=candlestick.doji(SilverCandle30Min)
 SilverCandle1Min=candlestick.doji_star(SilverCandle1Min)
 SilverCandle1Min=candlestick.gravestone_doji(SilverCandle1Min)
 SilverCandle1Min=candlestick.dragonfly_doji(SilverCandle1Min)
@@ -567,13 +619,302 @@ getDoji(LeadCandle15Min,DataIndex,LeadHistoryV1,0.003)
 getDoji(GoldCandle1Min,DataIndex,GoldHistoryV2,0.003)
 getDoji(GoldCandle3Min,DataIndex,GoldHistoryV2,0.003*1.5)
 getDoji(GoldCandle5Min,DataIndex,GoldHistoryV2,0.003*2.5)
-getDoji(GoldCandle15Min,DataIndex,GoldHistoryV2,0.003)
+getDoji(GoldCandle15Min,DataIndex,GoldHistoryV2,0.003*5)
+
+getDoji(GoldCandle5Min,DataIndex,GoldHistoryV2,0.05)
 
 getDoji(SilverCandle1Min,DataIndex,SilverHistoryV2,0.003)
 getDoji(SilverCandle1Min,DataIndex,SilverHistoryV3,0.003)
 getDoji(SilverCandle1Min,DataIndex,SilverHistoryV4,0.003)
 getDoji(SilverCandle3Min,DataIndex,SilverHistoryV2,0.003*3)
-getDoji(SilverCandle5Min,DataIndex,SilverHistoryV2,0.003*5)
+getDoji(SilverCandle5Min,DataIndex,SilverHistoryV2,0.05)
+
+#AllList=list(CrudeData.iloc[DateIndex])[6:]
+
+DataIndex=7
+#test(LeadHistoryV1,DataIndex,3)
+#test(LeadHistoryV2,DataIndex,3)
+#LeadHistoryV1.iloc[DataIndex]
+#test(SilverHistory,8)
+#test(GoldHistoryV1,8)
+#test(SilverHistoryV2,8)
+#test(GoldHistoryV2,8)
+#
+DataIndex=1
+while(DataIndex<=12):
+    SilverHistory.iloc[DataIndex]['Date']
+    test(SilverHistory,DataIndex,0)
+    SF1=AllList
+    test(SilverHistoryV2,DataIndex,0)
+    SF2=AllList
+    SF3=fibMS
+    
+    test(GoldHistoryV1,DataIndex,0)
+    GF1=AllList
+    test(GoldHistoryV2,DataIndex,0)
+    GF2=AllList
+    GF3=fibMS
+    
+    GoldData=getSpecificData(GoldHistoryV1,GoldCandle15Min,DataIndex)
+    SilverData=getSpecificData(SilverHistoryV2,SilverCandle15Min,DataIndex)
+    GoldData['high'][:3]
+    i=0
+    LastFoundIndex=-1
+    LastFoundSignal=""
+    fPH=SilverHistoryV2.iloc[DataIndex]['High']
+    fPL=SilverHistoryV2.iloc[DataIndex]['Low']
+    SRange=fPH-fPL    
+    Stolerance=round(SRange*.01,0)
+    fPH=GoldHistoryV1.iloc[DataIndex]['High']
+    fPL=GoldHistoryV1.iloc[DataIndex]['Low']
+    GRange=fPH-fPL    
+    Gtolerance=round(GRange*.01,0)
+    while(i<len(GoldData)):
+        SLL=SilverData['low'][:i+1].min()
+        SHH=SilverData['high'][:i+1].max()
+        SL=SilverData.iloc[i]['low']
+        SH=SilverData.iloc[i]['high']
+        SO=SilverData.iloc[i]['open']
+        SC=SilverData.iloc[i]['close']
+        
+        GLL=GoldData['low'][:i+1].min()
+        GHH=GoldData['high'][:i+1].max()
+        GL=GoldData.iloc[i]['low']
+        GH=GoldData.iloc[i]['high']
+        GO=GoldData.iloc[i]['open']
+        GC=GoldData.iloc[i]['close']
+        if(LastFoundIndex!=-1):        
+            SPL=SilverData.iloc[LastFoundIndex]['low']
+            SPH=SilverData.iloc[LastFoundIndex]['high']
+            GPL=GoldData.iloc[LastFoundIndex]['low']
+            GPH=GoldData.iloc[LastFoundIndex]['high']
+            if((SL>SPL) and (GL>GPL)):
+                print(str(SilverData.iloc[i]['Date']) +" Buy  \t" + str(GO>GC) + "\t"+str(SO>SC))
+            if((SH<SPH) and (GH<GPH)):
+                print(str(SilverData.iloc[i]['Date']) +" Sell \t" + str(GO>GC) + "\t"+str(SO>SC))
+
+            if(LastFoundSignal=="Buy" and ( (SPL-Stolerance <= SL <= SPL+Stolerance) or (GPL-Gtolerance <= GL <= GPL+Gtolerance))):
+                print(str(SilverData.iloc[i]['Date']) +" BUYY \t" + str(GO>GC) + "\t"+str(SO>SC))            
+            if(LastFoundSignal=="Sell" and ( (SH-Stolerance <= SPH <= SH+Stolerance) or (GH-Gtolerance <= GPH <= GH+Gtolerance))):
+                print(str(SilverData.iloc[i]['Date']) +" SELLK \t" + str(GO>GC) + "\t"+str(SO>SC))
+                
+            LastFoundIndex=-1
+            LastFoundSignal=""
+        SResult1=False;SResult2=False;SResult3=False
+        GResult1=False;GResult2=False;GResult3=False
+        if(SL==SLL):
+            SResult1=isInRange(SilverHistoryV2,DataIndex,SL,SF1,0,0.03)        
+            SResult2=isInRange(SilverHistoryV2,DataIndex,SL,SF2,0,0.03)
+            SResult3=isInRange(SilverHistoryV2,DataIndex,SL,SF3,0,0.03)
+            LastFoundSignal="Buy"
+        else:
+            if(SH==SHH):
+                SResult1=isInRange(SilverHistoryV2,DataIndex,SH,SF1,0,0.03)        
+                SResult2=isInRange(SilverHistoryV2,DataIndex,SH,SF2,0,0.03)
+                SResult3=isInRange(SilverHistoryV2,DataIndex,SH,SF3,0,0.03)       
+                LastFoundSignal="Sell"
+        
+        if(GL==GLL):
+            GResult1=isInRange(GoldHistoryV1,DataIndex,GL,GF1,0,0.03)        
+            GResult2=isInRange(GoldHistoryV1,DataIndex,GL,GF2,0,0.03)        
+            GResult3=isInRange(GoldHistoryV1,DataIndex,GL,GF3,0,0.03)        
+            LastFoundSignal="Buy"
+        else:
+            if(GH==GHH):
+                GResult1=isInRange(GoldHistoryV1,DataIndex,GH,GF1,0,0.03)        
+                GResult2=isInRange(GoldHistoryV1,DataIndex,GH,GF2,0,0.03)        
+                GResult3=isInRange(GoldHistoryV1,DataIndex,GH,GF3,0,0.03)
+                LastFoundSignal="Sell"
+        
+        if(((SResult1==True)| (SResult2==True)| (SResult3==True)) and ((GResult1==True)| (GResult2==True)| (GResult3==True))):
+            #print(SilverData.iloc[i]['Date'])
+            LastFoundIndex=i
+        
+        i=i+1
+    DataIndex=DataIndex+1
+
+    
+
+
+#
+#test(GoldHistoryV1,DataIndex,0)
+#test(GoldHistoryV2,DataIndex,0)
+#GoldHistoryV1.iloc[DataIndex]
+##AllList
+#test(SilverHistoryV3,DataIndex,0)
+#test(GoldHistoryV3,DataIndex,0)
+
+def BreakOut(previousDayHigh,previousDayLow,todayHigh,todayLow):
+    #global Signals
+    Signal={}
+#previousDayHigh=199.5
+#previousDayLow=194.4
+#todayHigh=194.65
+#todayLow=192.75
+    profitPercent =0.7*.01
+    stopLossPercent=0.8*.01
+    mulFactor1 = 0.45
+    mulFactor2 = 0.75
+    factor1 = mulFactor1 * (previousDayHigh - previousDayLow)
+    factor2 = mulFactor2 * (previousDayHigh - previousDayLow)
+    buyAt =0
+    buyTarget =0
+    buyStopLoss =0
+    sellAt =0
+    sellTarget =0
+    sellStopLoss =0
+    NoData=False
+    message=" ==> "
+    if ((todayHigh - todayLow) < factor1):
+        buyAt = todayLow + factor1;
+        buyTarget = todayLow + factor1 + (todayLow + factor1) * profitPercent;
+        buyStopLoss = todayLow + factor1 - (todayLow + factor1) * stopLossPercent;
+        sellAt = todayHigh - factor1;
+        sellTarget = todayHigh - factor1 - (todayHigh - factor1) * profitPercent;
+        sellStopLoss = todayHigh - factor1 + (todayHigh - factor1) * stopLossPercent
+    elif(((todayHigh - todayLow) > factor1) and ((todayHigh - todayLow) < factor2)):
+        buyAt = todayLow + factor2;
+        buyTarget = todayLow + factor2 + (todayLow + factor2) * profitPercent;
+        buyStopLoss = todayLow + factor2 - (todayLow + factor2) * stopLossPercent;
+        sellAt = todayHigh - factor2;
+        sellTarget = todayHigh - factor2 - (todayHigh - factor2) * profitPercent;
+        sellStopLoss = todayHigh - factor2 + (todayHigh - factor2) * stopLossPercent
+    else:
+        NoData=True
+    Signal["WHigh"]=todayHigh
+    Signal["WLow"]=todayLow
+    Signal['Buy']=math.ceil(buyAt* 100) / 100
+    Signal['BuyT']=math.ceil(buyTarget* 100) / 100
+    Signal['BuySL']=math.ceil(buyStopLoss* 100) / 100
+    Signal['Sell']=math.ceil(sellAt* 100) / 100
+    Signal['SellT']=math.ceil(sellTarget* 100) / 100
+    Signal['SellSL']=math.ceil(sellStopLoss* 100) / 100
+    Signal['BreakOut']=True
+    message = message + "\tBuy At " + str(math.ceil(buyAt * 100) / 100) + ". Target = " + str(math.ceil(buyTarget * 100) / 100) + ". Stoploss = " + str(math.ceil(buyStopLoss * 100) / 100) + "\n"
+    message = message + "\t\tSell At " + str(math.ceil(sellAt * 100) / 100) + ". Target = " + str(math.ceil(sellTarget * 100) / 100) + ". Stoploss = " + str(math.ceil(sellStopLoss * 100) / 100) + ""
+    #print(message)
+    if(buyAt!=0):
+        Signal['BreakOut']=False
+        #BreakOutSignals.append(Signal)
+        #print(message)
+    return Signal
+
+fibMS={}
+AllList=[]
+def test(CrudeData,DateIndex,decimal):
+    #CrudeData=LeadHistoryV1
+    #DateIndex=DataIndex
+    #decimal=3
+    global AllList
+    LowerList=[]
+    HigherList=[]
+    LowerMList=[]
+    HigherMList=[]
+    LowerMinList=[]
+    HigherMinList=[]
+    i=1
+    #print(CrudeData.iloc[DateIndex]['Date'])
+    AllList=list(CrudeData.iloc[DateIndex])[6:]
+    while(i<=4):
+        LowerList.append(CrudeData.iloc[DateIndex]['L'+str(i)])
+        HigherList.append(CrudeData.iloc[DateIndex]['H'+str(i)])
+        LowerMList.append(CrudeData.iloc[DateIndex]['L'+str(i-1)+"M1"])
+        HigherMList.append(CrudeData.iloc[DateIndex]['H'+str(i-1)+"M1"])
+        LowerMinList.append(CrudeData.iloc[DateIndex]['L'+str(i-1)+"M0"])
+        LowerMinList.append(CrudeData.iloc[DateIndex]['L'+str(i-1)+"M2"])
+        HigherMinList.append(CrudeData.iloc[DateIndex]['H'+str(i-1)+"M0"])
+        HigherMinList.append(CrudeData.iloc[DateIndex]['H'+str(i-1)+"M2"])        
+        i=i+1
+    PH=CrudeData.iloc[DateIndex-1]['High']
+    PL=CrudeData.iloc[DateIndex-1]['Low']
+    fPH=CrudeData.iloc[DateIndex]['High']
+    fPL=CrudeData.iloc[DateIndex]['Low']
+#    
+#    l=0
+#    while(l<len(LowerList)):
+#        h=0
+#        while(h<len(HigherList)):
+#            S=BreakOut(PH,PL,HigherList[h],LowerList[l])
+#            if(S['BreakOut']==True):
+#                print("Expected BreakOut at Low:"+str(LowerList[l])+"\tHigher : "+str(HigherList[h]))
+#            
+#            h=h+1
+#        l=l+1
+#    
+#    l=0
+#    while(l<len(LowerList)):
+#        h=0
+#        while(h<len(HigherMList)):
+#            S=BreakOut(PH,PL,HigherMList[h],LowerList[l])
+#            #if(S['BreakOut']==True):
+#            print(str(S['BreakOut'])+ " - "  + " = " +str(LowerList[l])+"\tHigher : "+str(HigherMList[h]))
+#            
+#            h=h+1
+#        l=l+1
+#    
+#    l=0
+#    while(l<len(LowerList)):
+#        h=0
+#        while(h<len(HigherMinList)):
+#            S=BreakOut(PH,PL,HigherMinList[h],LowerList[l])
+#            #if(S['BreakOut']==True):
+#            print(str(S['BreakOut'])+ " - "  + " = " +str(LowerList[l])+"\tHigher : "+str(HigherMinList[h]))
+#            
+#            h=h+1
+#        l=l+1
+#        
+#    l=0
+#    while(l<len(LowerList)):
+#        h=0
+#        while(h<len(HigherMinList)):
+#            S=BreakOut(PH,PL,HigherMinList[h],LowerList[l])
+#            #if(S['BreakOut']==True):
+#            if(S['BreakOut']):
+#                print(str(S['BreakOut'])+ " - "  + " = " +str(LowerList[l])+"\tHigher : "+str(HigherMinList[h]))
+#            #print(S)
+#            h=h+1
+#        
+#        l=l+1
+    
+    Fibs=fibupper(fPH-fPL,fPL)
+    #getKey(Fibs,31585)
+    #Fibs[-618]
+    fibseries = [1, 236, 382, 500, 618, 786, 1000, 1236,1382, 1500, 1618, 2000,2236,-236, -382, -500, -618, -786, -1000, -1236,-1382,-1500, -1618, -2000,-2236]
+    for fib in fibseries:
+        if(fib==1):
+            fibMS[0]=round(Fibs[fib],decimal)
+        else:
+            fibMS[fib]=round(Fibs[fib],decimal)
+    Range=fPH-fPL
+    tolerance=round(Range*.04,decimal)
+#    Percent=0.003        
+    #tolerance=round(CrudeData.iloc[DateIndex]['Open']*Percent/10,2)
+    for fibM in fibMS:
+        #print(str(fibMS[fibM]))
+        #fibM=-618
+        #List=math.floor(round(31582.5,decimal))
+        for List in AllList:
+            if(fibMS[fibM]-tolerance <= round(List,decimal) <= fibMS[fibM]+tolerance):
+                t=1
+            #if(fibMS[fibM]==List):
+            #if(Range-tolerance <= O <= Range+tolerance):
+#uncomment                print("\t"+str(fibM)+ "\t - \t" +str(round(fibMS[fibM],2)) + " \t - \t" + str(round(List,decimal))+" \t "+str(round(fibMS[fibM]-List,decimal)))
+    #fibMS[]            
+#    Range=fPH-fPL
+#    tolerance=round(Range*.01,2)
+#    Percent=0.003        
+#    #tolerance=round(CrudeData.iloc[DateIndex]['Open']*Percent/10,2)
+#    for fibM in fibMS:
+#        #print(str(fibMS[fibM]))
+#        for List in AllList:
+#            #if(fibMS[fibM]-tolerance <= List <= fibMS[fibM]+tolerance):
+#            if(fibMS[fibM]==List):
+#            #if(Range-tolerance <= O <= Range+tolerance):
+#                print(str(fibM)+ " - " +str(fibMS[fibM]) + " - " + str(List))    
+#    
+        #print(str(fib) + " - " + str(Fibs[fib]))
+    #getKey(Fibs,fib)
+      #BreakOut(PH,PL,LowerList[l],HigherMinList[h])  
 ##DataIndex=2
 #candlestick.DisplayCandles(SilverHistory,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V1",False)
 #candlestick.DisplayCandles(SilverHistoryV2,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V2",False)
@@ -676,37 +1017,3 @@ getDoji(SilverCandle5Min,DataIndex,SilverHistoryV2,0.003*5)
 #(f.iloc[0]['H3']+f.iloc[0]['H1'])/2
 #########################################
 #
-#iResults1=getResultData(CrudeDf30Min)  
-#iResults=iResults1
-#iResults=extractResultData(iResults1,date1,date2)  
-#
-#iResults[(iResults['CCC']=='G') & (iResults['SameOpen']==True) & (iResults['SameLowT']==True) & 
-#         (iResults['CCP']>20)   ][['Date','PCP','CCP','PDIFF','LDIFF','SameC1vsL']]
-#iResults[(iResults['CCC']=='G') & (iResults['SameOpenT']==True) & (iResults['SameLowT']==True) & 
-#         (iResults['CCP']>10)   ][['Date','PCP','CCP','PDIFF','LDIFF','SameC1vsL']]
-#First=iResults[(iResults['CCC']=='G') & (iResults['SameOpen']==True) 
-#        & (iResults['SameLowT']==True)
-#         & (iResults['CCP']>20)   ][['Date','PCP','CCP','PDIFF','LDIFF','SameC1vsL']]
-#
-#Second=iResults[(iResults['CCC']=='G') & ((iResults['SameOpenT']==True) 
-#            | (iResults['SameOpen']==True))
-#            & (iResults['SameLowT']==True)
-#            & (iResults['PDIFF']<=200)
-#             & (iResults['CCP']>20) 
-#             & (iResults['CCP']<90) ][['Date','PCP','CCP','PDIFF','LDIFF','SameC1vsL']]
-#
-#SellF=iResults[(iResults['CCC']=='R') & (iResults['SameOpenT']==True) & (iResults['SameHighT']==True) & 
-#          (iResults['CCP']>19) & (iResults['SameC1vsH2']==True)][['Date','PCP','CCP','PDIFF']]
-#SellS=iResults[(iResults['CCC']=='R') & (iResults['SameOpen']==True) & (iResults['SameHighT']==True) & 
-#         (iResults['SameC1vsH']==True) & (iResults['CCP']>19) ][['Date','PCP','CCP','PDIFF']]
-#
-#iResults[(iResults['CCC']=='R') & (iResults['SameOpenT']==True) 
-#        #& (iResults['SameHighT']==True) 
-#        #  & (iResults['CCP']>19) 
-#        #  & (iResults['SameC1vsH2']==True)
-#          ][['Date','PCP','CCP','PDIFF','SameC1vsH2']]
-#CrudeDf15Min
-#CrudeDf30Min1=CrudeDf15Min[CrudeDf15Min['Hour']==29][['Date','open','high','low','close','volume','volume1']]
-#pColumns=['Date','open','high','low','close','volume','volume1']
-#CrudeDf15Min
-    
