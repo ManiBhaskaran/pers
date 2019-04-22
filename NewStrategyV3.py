@@ -492,258 +492,6 @@ def getDoji(Candle1Min,DataIndex,History,Percent):
         i=i+1
 
 
-GoldExpiry="05JUN2019"
-SilverExpiry="03MAY2019"
-ZincExpiry="30APR2019"
-LeadExpiry="30APR2019"
-PivotType="D"
-OHLC=4
-DataIndex=11
-#Symbol="Silver" 
-Symbol="GOLD"
-GoldHistoryV1=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC,GoldExpiry)
-GoldHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3,GoldExpiry)
-GoldHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3,GoldExpiry)
-GoldHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4,GoldExpiry)
-GoldCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
-GoldCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
-GoldCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
-GoldCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
-GoldCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
-ChartWithBreakOut(GoldHistoryV1,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V1")
-ChartWithBreakOut(GoldHistoryV2,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V2")
-ChartWithBreakOut(GoldHistoryV3,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V3")
-ChartWithBreakOut(GoldHistoryV4,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V4")
-
-
-
-Symbol="LEAD"
-LeadHistoryV1=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC,LeadExpiry)
-LeadHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3,LeadExpiry)
-LeadHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3,LeadExpiry)
-LeadHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4,LeadExpiry)
-
-
-
-
-LeadCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
-LeadCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
-LeadCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
-LeadCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
-LeadCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
-ChartWithBreakOut(LeadHistoryV2,DataIndex,LeadCandle5Min,LeadCandle30Min,Symbol+"V2")
-ChartWithBreakOut(LeadHistoryV1,DataIndex,LeadCandle5Min,LeadCandle30Min,Symbol+"V1")
-#DataIndex=0
-#candlestick.DisplayCandles(GoldHistoryV1,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V1",False)
-#candlestick.DisplayCandles(GoldHistoryV2,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V2",False)
-#candlestick.DisplayCandles(GoldHistoryV3,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V3",False)
-#candlestick.DisplayCandles(GoldHistoryV4,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V4",False)
-#
-Symbol="SILVER"
-PivotType="D"
-OHLC=4
-
-SilverHistory=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC,SilverExpiry)
-SilverHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3,SilverExpiry)
-SilverHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3,SilverExpiry)
-SilverHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4,SilverExpiry)
-SilverCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
-SilverCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
-SilverCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
-SilverCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
-SilverCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
-ChartWithBreakOut(SilverHistory,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V1")
-ChartWithBreakOut(SilverHistoryV2,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V2")
-ChartWithBreakOut(SilverHistoryV3,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V3")
-ChartWithBreakOut(SilverHistoryV4,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V4")
-##DataIndex=2
-#candlestick.DisplayCandles(SilverHistory,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V1",False)
-#candlestick.DisplayCandles(SilverHistoryV2,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V2",False)
-#candlestick.DisplayCandles(SilverHistoryV3,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V3",False)
-#candlestick.DisplayCandles(SilverHistoryV4,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V4",False)
-#
-#
-#################
-GoldCandle1Min=candlestick.doji(GoldCandle1Min)
-GoldCandle3Min=candlestick.doji(GoldCandle3Min)
-GoldCandle5Min=candlestick.doji(GoldCandle5Min)
-GoldCandle15Min=candlestick.doji(GoldCandle15Min)
-GoldCandle30Min=candlestick.doji(GoldCandle30Min)
-GoldCandle1Min=candlestick.doji_star(GoldCandle1Min)
-GoldCandle1Min=candlestick.gravestone_doji(GoldCandle1Min)
-GoldCandle1Min=candlestick.dragonfly_doji(GoldCandle1Min)
-
-#GoldCandle3Min=candlestick.doji_star(GoldCandle3Min)
-#GoldCandle3Min=candlestick.gravestone_doji(GoldCandle3Min)
-#GoldCandle3Min=candlestick.dragonfly_doji(GoldCandle3Min)
-
-
-#GoldCandle5Min=candlestick.doji_star(GoldCandle5Min)
-#GoldCandle5Min=candlestick.gravestone_doji(GoldCandle5Min)
-#GoldCandle5Min=candlestick.dragonfly_doji(GoldCandle5Min)
-
-Candle1Min=SilverCandle1Min
-Candle1Min.columns
-#Temp=Candle1Min[(Candle1Min['DojiStar']==True)] & (Candle1Min['open']==Candle1Min['close'])]
-#Temp=Candle1Min[(Candle1Min['DragonflyDoji']==True)]# & (Candle1Min['open']==Candle1Min['close'])]
-#Temp=Candle1Min[(Candle1Min['GravestoneDoji']==True) & (Candle1Min['open']==Candle1Min['close'])]
-
-
-SilverCandle1Min=candlestick.doji(SilverCandle1Min)
-SilverCandle3Min=candlestick.doji(SilverCandle3Min)
-SilverCandle5Min=candlestick.doji(SilverCandle5Min)
-SilverCandle15Min=candlestick.doji(SilverCandle15Min)
-SilverCandle30Min=candlestick.doji(SilverCandle30Min)
-SilverCandle1Min=candlestick.doji_star(SilverCandle1Min)
-SilverCandle1Min=candlestick.gravestone_doji(SilverCandle1Min)
-SilverCandle1Min=candlestick.dragonfly_doji(SilverCandle1Min)
-
-#GoldCandle1Min[GoldCandle1Min['Doji']==True]
-#GoldCandle1Min[GoldCandle1Min['DojiStar']==True]
-#GoldCandle1Min[GoldCandle1Min['GravestoneDoji']==True]
-#GoldCandle1Min[GoldCandle1Min['DragonflyDoji']==True]
-
-LeadCandle1Min=candlestick.doji(LeadCandle1Min)
-LeadCandle3Min=candlestick.doji(LeadCandle3Min)
-LeadCandle5Min=candlestick.doji(LeadCandle5Min)
-LeadCandle15Min=candlestick.doji(LeadCandle15Min)
-Candle1Min=LeadCandle1Min
-Temp=Candle1Min[(Candle1Min['Doji']==True) & (Candle1Min['open']==Candle1Min['close'])]
-Temp.iloc[0]['open']*0.003/10
-getDoji(LeadCandle1Min,DataIndex,LeadHistoryV1,0.003)
-getDoji(LeadCandle3Min,DataIndex,LeadHistoryV1,0.003*1.5)
-getDoji(LeadCandle5Min,DataIndex,LeadHistoryV1,0.003*2.5)
-getDoji(LeadCandle15Min,DataIndex,LeadHistoryV1,0.003)
-
-
-getDoji(GoldCandle1Min,DataIndex,GoldHistoryV2,0.003)
-getDoji(GoldCandle3Min,DataIndex,GoldHistoryV2,0.003*1.5)
-getDoji(GoldCandle5Min,DataIndex,GoldHistoryV2,0.003*2.5)
-getDoji(GoldCandle15Min,DataIndex,GoldHistoryV2,0.003*5)
-
-getDoji(GoldCandle5Min,DataIndex,GoldHistoryV2,0.05)
-
-getDoji(SilverCandle1Min,DataIndex,SilverHistoryV2,0.003)
-getDoji(SilverCandle1Min,DataIndex,SilverHistoryV3,0.003)
-getDoji(SilverCandle1Min,DataIndex,SilverHistoryV4,0.003)
-getDoji(SilverCandle3Min,DataIndex,SilverHistoryV2,0.003*3)
-getDoji(SilverCandle5Min,DataIndex,SilverHistoryV2,0.05)
-
-#AllList=list(CrudeData.iloc[DateIndex])[6:]
-
-DataIndex=7
-#test(LeadHistoryV1,DataIndex,3)
-#test(LeadHistoryV2,DataIndex,3)
-#LeadHistoryV1.iloc[DataIndex]
-#test(SilverHistory,8)
-#test(GoldHistoryV1,8)
-#test(SilverHistoryV2,8)
-#test(GoldHistoryV2,8)
-#
-DataIndex=1
-while(DataIndex<=12):
-    SilverHistory.iloc[DataIndex]['Date']
-    test(SilverHistory,DataIndex,0)
-    SF1=AllList
-    test(SilverHistoryV2,DataIndex,0)
-    SF2=AllList
-    SF3=fibMS
-    
-    test(GoldHistoryV1,DataIndex,0)
-    GF1=AllList
-    test(GoldHistoryV2,DataIndex,0)
-    GF2=AllList
-    GF3=fibMS
-    
-    GoldData=getSpecificData(GoldHistoryV1,GoldCandle15Min,DataIndex)
-    SilverData=getSpecificData(SilverHistoryV2,SilverCandle15Min,DataIndex)
-    GoldData['high'][:3]
-    i=0
-    LastFoundIndex=-1
-    LastFoundSignal=""
-    fPH=SilverHistoryV2.iloc[DataIndex]['High']
-    fPL=SilverHistoryV2.iloc[DataIndex]['Low']
-    SRange=fPH-fPL    
-    Stolerance=round(SRange*.01,0)
-    fPH=GoldHistoryV1.iloc[DataIndex]['High']
-    fPL=GoldHistoryV1.iloc[DataIndex]['Low']
-    GRange=fPH-fPL    
-    Gtolerance=round(GRange*.01,0)
-    while(i<len(GoldData)):
-        SLL=SilverData['low'][:i+1].min()
-        SHH=SilverData['high'][:i+1].max()
-        SL=SilverData.iloc[i]['low']
-        SH=SilverData.iloc[i]['high']
-        SO=SilverData.iloc[i]['open']
-        SC=SilverData.iloc[i]['close']
-        
-        GLL=GoldData['low'][:i+1].min()
-        GHH=GoldData['high'][:i+1].max()
-        GL=GoldData.iloc[i]['low']
-        GH=GoldData.iloc[i]['high']
-        GO=GoldData.iloc[i]['open']
-        GC=GoldData.iloc[i]['close']
-        if(LastFoundIndex!=-1):        
-            SPL=SilverData.iloc[LastFoundIndex]['low']
-            SPH=SilverData.iloc[LastFoundIndex]['high']
-            GPL=GoldData.iloc[LastFoundIndex]['low']
-            GPH=GoldData.iloc[LastFoundIndex]['high']
-            if((SL>SPL) and (GL>GPL)):
-                print(str(SilverData.iloc[i]['Date']) +" Buy  \t" + str(GO>GC) + "\t"+str(SO>SC))
-            if((SH<SPH) and (GH<GPH)):
-                print(str(SilverData.iloc[i]['Date']) +" Sell \t" + str(GO>GC) + "\t"+str(SO>SC))
-
-            if(LastFoundSignal=="Buy" and ( (SPL-Stolerance <= SL <= SPL+Stolerance) or (GPL-Gtolerance <= GL <= GPL+Gtolerance))):
-                print(str(SilverData.iloc[i]['Date']) +" BUYY \t" + str(GO>GC) + "\t"+str(SO>SC))            
-            if(LastFoundSignal=="Sell" and ( (SH-Stolerance <= SPH <= SH+Stolerance) or (GH-Gtolerance <= GPH <= GH+Gtolerance))):
-                print(str(SilverData.iloc[i]['Date']) +" SELLK \t" + str(GO>GC) + "\t"+str(SO>SC))
-                
-            LastFoundIndex=-1
-            LastFoundSignal=""
-        SResult1=False;SResult2=False;SResult3=False
-        GResult1=False;GResult2=False;GResult3=False
-        if(SL==SLL):
-            SResult1=isInRange(SilverHistoryV2,DataIndex,SL,SF1,0,0.03)        
-            SResult2=isInRange(SilverHistoryV2,DataIndex,SL,SF2,0,0.03)
-            SResult3=isInRange(SilverHistoryV2,DataIndex,SL,SF3,0,0.03)
-            LastFoundSignal="Buy"
-        else:
-            if(SH==SHH):
-                SResult1=isInRange(SilverHistoryV2,DataIndex,SH,SF1,0,0.03)        
-                SResult2=isInRange(SilverHistoryV2,DataIndex,SH,SF2,0,0.03)
-                SResult3=isInRange(SilverHistoryV2,DataIndex,SH,SF3,0,0.03)       
-                LastFoundSignal="Sell"
-        
-        if(GL==GLL):
-            GResult1=isInRange(GoldHistoryV1,DataIndex,GL,GF1,0,0.03)        
-            GResult2=isInRange(GoldHistoryV1,DataIndex,GL,GF2,0,0.03)        
-            GResult3=isInRange(GoldHistoryV1,DataIndex,GL,GF3,0,0.03)        
-            LastFoundSignal="Buy"
-        else:
-            if(GH==GHH):
-                GResult1=isInRange(GoldHistoryV1,DataIndex,GH,GF1,0,0.03)        
-                GResult2=isInRange(GoldHistoryV1,DataIndex,GH,GF2,0,0.03)        
-                GResult3=isInRange(GoldHistoryV1,DataIndex,GH,GF3,0,0.03)
-                LastFoundSignal="Sell"
-        
-        if(((SResult1==True)| (SResult2==True)| (SResult3==True)) and ((GResult1==True)| (GResult2==True)| (GResult3==True))):
-            #print(SilverData.iloc[i]['Date'])
-            LastFoundIndex=i
-        
-        i=i+1
-    DataIndex=DataIndex+1
-
-    
-
-
-#
-#test(GoldHistoryV1,DataIndex,0)
-#test(GoldHistoryV2,DataIndex,0)
-#GoldHistoryV1.iloc[DataIndex]
-##AllList
-#test(SilverHistoryV3,DataIndex,0)
-#test(GoldHistoryV3,DataIndex,0)
-
 def BreakOut(previousDayHigh,previousDayLow,todayHigh,todayLow):
     #global Signals
     Signal={}
@@ -896,6 +644,283 @@ def test(CrudeData,DateIndex,decimal):
         for List in AllList:
             if(fibMS[fibM]-tolerance <= round(List,decimal) <= fibMS[fibM]+tolerance):
                 t=1
+
+GoldExpiry="05JUN2019"
+SilverExpiry="03MAY2019"
+ZincExpiry="30APR2019"
+LeadExpiry="30APR2019"
+PivotType="D"
+OHLC=4
+DataIndex=11
+#Symbol="Silver" 
+Symbol="GOLD"
+GoldHistoryV1=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC,GoldExpiry)
+GoldHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3,GoldExpiry)
+GoldHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3,GoldExpiry)
+GoldHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4,GoldExpiry)
+GoldCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
+GoldCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
+GoldCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
+GoldCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
+GoldCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
+ChartWithBreakOut(GoldHistoryV1,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V1")
+ChartWithBreakOut(GoldHistoryV2,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V2")
+ChartWithBreakOut(GoldHistoryV3,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V3")
+ChartWithBreakOut(GoldHistoryV4,DataIndex,GoldCandle15Min,GoldCandle30Min,Symbol+"V4")
+
+
+
+Symbol="LEAD"
+LeadHistoryV1=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC,LeadExpiry)
+LeadHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3,LeadExpiry)
+LeadHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3,LeadExpiry)
+LeadHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4,LeadExpiry)
+
+
+
+
+LeadCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
+LeadCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
+LeadCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
+LeadCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
+LeadCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
+ChartWithBreakOut(LeadHistoryV2,DataIndex,LeadCandle5Min,LeadCandle30Min,Symbol+"V2")
+ChartWithBreakOut(LeadHistoryV1,DataIndex,LeadCandle5Min,LeadCandle30Min,Symbol+"V1")
+#DataIndex=0
+#candlestick.DisplayCandles(GoldHistoryV1,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V1",False)
+#candlestick.DisplayCandles(GoldHistoryV2,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V2",False)
+#candlestick.DisplayCandles(GoldHistoryV3,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V3",False)
+#candlestick.DisplayCandles(GoldHistoryV4,DataIndex,GoldCandle30Min,GoldCandle15Min,Symbol+"V4",False)
+#
+Symbol="SILVER"
+PivotType="D"
+OHLC=4
+
+SilverHistory=candlestick.GetEODDataFromMCX(Symbol,PivotType,OHLC,SilverExpiry)
+SilverHistoryV2=candlestick.GetEODDataFromMCX(Symbol,PivotType,3,SilverExpiry)
+SilverHistoryV3=candlestick.GetEODDataFromMCX(Symbol,"C",3,SilverExpiry)
+SilverHistoryV4=candlestick.GetEODDataFromMCX(Symbol,"C",4,SilverExpiry)
+SilverCandle15Min=candlestick.getLiveDataFromZerodha(Symbol,"15minute")
+SilverCandle1Min=candlestick.getLiveDataFromZerodha(Symbol,"minute")
+SilverCandle3Min=candlestick.getLiveDataFromZerodha(Symbol,"3minute")
+SilverCandle5Min=candlestick.getLiveDataFromZerodha(Symbol,"5minute")
+SilverCandle30Min=candlestick.getLiveDataFromZerodha(Symbol,"30minute")
+ChartWithBreakOut(SilverHistory,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V1")
+ChartWithBreakOut(SilverHistoryV2,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V2")
+ChartWithBreakOut(SilverHistoryV3,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V3")
+ChartWithBreakOut(SilverHistoryV4,DataIndex,SilverCandle15Min,SilverCandle30Min,Symbol+"V4")
+##DataIndex=2
+#candlestick.DisplayCandles(SilverHistory,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V1",False)
+#candlestick.DisplayCandles(SilverHistoryV2,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V2",False)
+#candlestick.DisplayCandles(SilverHistoryV3,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V3",False)
+#candlestick.DisplayCandles(SilverHistoryV4,DataIndex,SilverCandle30Min,SilverCandle15Min,Symbol+"V4",False)
+#
+#
+#################
+GoldCandle1Min=candlestick.doji(GoldCandle1Min)
+GoldCandle3Min=candlestick.doji(GoldCandle3Min)
+GoldCandle5Min=candlestick.doji(GoldCandle5Min)
+GoldCandle15Min=candlestick.doji(GoldCandle15Min)
+GoldCandle30Min=candlestick.doji(GoldCandle30Min)
+GoldCandle1Min=candlestick.doji_star(GoldCandle1Min)
+GoldCandle1Min=candlestick.gravestone_doji(GoldCandle1Min)
+GoldCandle1Min=candlestick.dragonfly_doji(GoldCandle1Min)
+
+#GoldCandle3Min=candlestick.doji_star(GoldCandle3Min)
+#GoldCandle3Min=candlestick.gravestone_doji(GoldCandle3Min)
+#GoldCandle3Min=candlestick.dragonfly_doji(GoldCandle3Min)
+
+
+#GoldCandle5Min=candlestick.doji_star(GoldCandle5Min)
+#GoldCandle5Min=candlestick.gravestone_doji(GoldCandle5Min)
+#GoldCandle5Min=candlestick.dragonfly_doji(GoldCandle5Min)
+
+Candle1Min=SilverCandle1Min
+Candle1Min.columns
+#Temp=Candle1Min[(Candle1Min['DojiStar']==True)] & (Candle1Min['open']==Candle1Min['close'])]
+#Temp=Candle1Min[(Candle1Min['DragonflyDoji']==True)]# & (Candle1Min['open']==Candle1Min['close'])]
+#Temp=Candle1Min[(Candle1Min['GravestoneDoji']==True) & (Candle1Min['open']==Candle1Min['close'])]
+
+
+SilverCandle1Min=candlestick.doji(SilverCandle1Min)
+SilverCandle3Min=candlestick.doji(SilverCandle3Min)
+SilverCandle5Min=candlestick.doji(SilverCandle5Min)
+SilverCandle15Min=candlestick.doji(SilverCandle15Min)
+SilverCandle30Min=candlestick.doji(SilverCandle30Min)
+SilverCandle1Min=candlestick.doji_star(SilverCandle1Min)
+SilverCandle1Min=candlestick.gravestone_doji(SilverCandle1Min)
+SilverCandle1Min=candlestick.dragonfly_doji(SilverCandle1Min)
+
+#GoldCandle1Min[GoldCandle1Min['Doji']==True]
+#GoldCandle1Min[GoldCandle1Min['DojiStar']==True]
+#GoldCandle1Min[GoldCandle1Min['GravestoneDoji']==True]
+#GoldCandle1Min[GoldCandle1Min['DragonflyDoji']==True]
+
+LeadCandle1Min=candlestick.doji(LeadCandle1Min)
+LeadCandle3Min=candlestick.doji(LeadCandle3Min)
+LeadCandle5Min=candlestick.doji(LeadCandle5Min)
+LeadCandle15Min=candlestick.doji(LeadCandle15Min)
+Candle1Min=LeadCandle1Min
+Temp=Candle1Min[(Candle1Min['Doji']==True) & (Candle1Min['open']==Candle1Min['close'])]
+Temp.iloc[0]['open']*0.003/10
+getDoji(LeadCandle1Min,DataIndex,LeadHistoryV1,0.003)
+getDoji(LeadCandle3Min,DataIndex,LeadHistoryV1,0.003*1.5)
+getDoji(LeadCandle5Min,DataIndex,LeadHistoryV1,0.003*2.5)
+getDoji(LeadCandle15Min,DataIndex,LeadHistoryV1,0.003)
+
+
+getDoji(GoldCandle1Min,DataIndex,GoldHistoryV2,0.003)
+getDoji(GoldCandle3Min,DataIndex,GoldHistoryV2,0.003*1.5)
+getDoji(GoldCandle5Min,DataIndex,GoldHistoryV2,0.003*2.5)
+getDoji(GoldCandle15Min,DataIndex,GoldHistoryV2,0.003*5)
+
+getDoji(GoldCandle5Min,DataIndex,GoldHistoryV2,0.05)
+
+getDoji(SilverCandle1Min,DataIndex,SilverHistoryV2,0.003)
+getDoji(SilverCandle1Min,DataIndex,SilverHistoryV3,0.003)
+getDoji(SilverCandle1Min,DataIndex,SilverHistoryV4,0.003)
+getDoji(SilverCandle3Min,DataIndex,SilverHistoryV2,0.003*3)
+getDoji(SilverCandle5Min,DataIndex,SilverHistoryV2,0.05)
+
+#AllList=list(CrudeData.iloc[DateIndex])[6:]
+
+DataIndex=7
+#test(LeadHistoryV1,DataIndex,3)
+#test(LeadHistoryV2,DataIndex,3)
+#LeadHistoryV1.iloc[DataIndex]
+#test(SilverHistory,8)
+#test(GoldHistoryV1,8)
+#test(SilverHistoryV2,8)
+#test(GoldHistoryV2,8)
+#
+Messages=[]
+DataIndex=1
+while(DataIndex<=10):
+    SilverHistory.iloc[DataIndex]['Date']
+    test(SilverHistory,DataIndex,0)
+    SF1=AllList
+    test(SilverHistoryV2,DataIndex,0)
+    SF2=AllList
+    SF3=fibMS
+    
+    test(GoldHistoryV1,DataIndex,0)
+    GF1=AllList
+    test(GoldHistoryV2,DataIndex,0)
+    GF2=AllList
+    GF3=fibMS
+    
+    GoldData=getSpecificData(GoldHistoryV1,GoldCandle15Min,DataIndex)
+    SilverData=getSpecificData(SilverHistoryV2,SilverCandle15Min,DataIndex)
+    GoldData['high'][:3]
+    i=0
+    LastFoundIndex=-1
+    LastFoundSignal=""
+    fPH=SilverHistoryV2.iloc[DataIndex]['High']
+    fPL=SilverHistoryV2.iloc[DataIndex]['Low']
+    SRange=fPH-fPL    
+    Stolerance=round(SRange*.01,0)
+    fPH=GoldHistoryV1.iloc[DataIndex]['High']
+    fPL=GoldHistoryV1.iloc[DataIndex]['Low']
+    GRange=fPH-fPL    
+    Gtolerance=round(GRange*.01,0)
+    while(i<len(GoldData)):
+        SLL=SilverData['low'][:i+1].min()
+        SHH=SilverData['high'][:i+1].max()
+        SL=SilverData.iloc[i]['low']
+        SH=SilverData.iloc[i]['high']
+        SO=SilverData.iloc[i]['open']
+        SC=SilverData.iloc[i]['close']
+        
+        GLL=GoldData['low'][:i+1].min()
+        GHH=GoldData['high'][:i+1].max()
+        GL=GoldData.iloc[i]['low']
+        GH=GoldData.iloc[i]['high']
+        GO=GoldData.iloc[i]['open']
+        GC=GoldData.iloc[i]['close']
+        if(LastFoundIndex!=-1):        
+            SPL=SilverData.iloc[LastFoundIndex]['low']
+            SPH=SilverData.iloc[LastFoundIndex]['high']
+            GPL=GoldData.iloc[LastFoundIndex]['low']
+            GPH=GoldData.iloc[LastFoundIndex]['high']
+            Transaction=""
+            Reliability=False
+            Data=GoldData    
+            
+            DateIndex=i
+            Margin=0.002
+            Stoploss=0.002            
+            SearchData=GoldCandle5Min
+            
+            if((SL>SPL) and (GL>GPL)):
+                
+                Transaction="Buy"
+                Reliability= (((GO>GC)==False) and ((SO>SC)==False))
+                if ((Transaction!="") and Reliability):
+                    Result=candlestick.Check(Data,Signal,DateIndex,Margin,Stoploss,SearchData)
+                    print(str(SilverData.iloc[i]['Date']) +" Buy  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
+                    Messages.append(str(SilverData.iloc[i]['Date']) +" Buy  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
+            if((SH<SPH) and (GH<GPH)):
+                #print(str(SilverData.iloc[i]['Date']) +" Sell \t" + str(GO>GC) + "\t"+str(SO>SC))
+                Transaction="Sell"
+                Reliability= (((GO>GC)==True) and ((SO>SC)==True))
+                if ((Transaction!="") and Reliability):
+                    Result=candlestick.Check(Data,Signal,DateIndex,Margin,Stoploss,SearchData)
+                    print(str(SilverData.iloc[i]['Date']) +" Sell  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
+                    Messages.append(str(SilverData.iloc[i]['Date']) +" Sell  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
+            if(LastFoundSignal=="Buy" and ( (SPL-Stolerance <= SL <= SPL+Stolerance) or (GPL-Gtolerance <= GL <= GPL+Gtolerance))):
+                print(str(SilverData.iloc[i]['Date']) +" BUYY \t" + str(GO>GC) + "\t"+str(SO>SC))            
+            if(LastFoundSignal=="Sell" and ( (SH-Stolerance <= SPH <= SH+Stolerance) or (GH-Gtolerance <= GPH <= GH+Gtolerance))):
+                print(str(SilverData.iloc[i]['Date']) +" SELLK \t" + str(GO>GC) + "\t"+str(SO>SC))
+            
+            
+            
+                
+            LastFoundIndex=-1
+            LastFoundSignal=""
+        SResult1=False;SResult2=False;SResult3=False
+        GResult1=False;GResult2=False;GResult3=False
+        if(SL==SLL):
+            SResult1=isInRange(SilverHistoryV2,DataIndex,SL,SF1,0,0.03)        
+            SResult2=isInRange(SilverHistoryV2,DataIndex,SL,SF2,0,0.03)
+            SResult3=isInRange(SilverHistoryV2,DataIndex,SL,SF3,0,0.03)
+            LastFoundSignal="Buy"
+        else:
+            if(SH==SHH):
+                SResult1=isInRange(SilverHistoryV2,DataIndex,SH,SF1,0,0.03)        
+                SResult2=isInRange(SilverHistoryV2,DataIndex,SH,SF2,0,0.03)
+                SResult3=isInRange(SilverHistoryV2,DataIndex,SH,SF3,0,0.03)       
+                LastFoundSignal="Sell"
+        
+        if(GL==GLL):
+            GResult1=isInRange(GoldHistoryV1,DataIndex,GL,GF1,0,0.03)        
+            GResult2=isInRange(GoldHistoryV1,DataIndex,GL,GF2,0,0.03)        
+            GResult3=isInRange(GoldHistoryV1,DataIndex,GL,GF3,0,0.03)        
+            LastFoundSignal="Buy"
+        else:
+            if(GH==GHH):
+                GResult1=isInRange(GoldHistoryV1,DataIndex,GH,GF1,0,0.03)        
+                GResult2=isInRange(GoldHistoryV1,DataIndex,GH,GF2,0,0.03)        
+                GResult3=isInRange(GoldHistoryV1,DataIndex,GH,GF3,0,0.03)
+                LastFoundSignal="Sell"
+        
+        if(((SResult1==True)| (SResult2==True)| (SResult3==True)) and ((GResult1==True)| (GResult2==True)| (GResult3==True))):
+            #print(SilverData.iloc[i]['Date'])
+            LastFoundIndex=i
+        
+        i=i+1
+    DataIndex=DataIndex+1
+
+for Message in Messages:
+    print(Message)
+#
+#test(GoldHistoryV1,DataIndex,0)
+#test(GoldHistoryV2,DataIndex,0)
+#GoldHistoryV1.iloc[DataIndex]
+##AllList
+#test(SilverHistoryV3,DataIndex,0)
+#test(GoldHistoryV3,DataIndex,0)
+
+
             #if(fibMS[fibM]==List):
             #if(Range-tolerance <= O <= Range+tolerance):
 #uncomment                print("\t"+str(fibM)+ "\t - \t" +str(round(fibMS[fibM],2)) + " \t - \t" + str(round(List,decimal))+" \t "+str(round(fibMS[fibM]-List,decimal)))
