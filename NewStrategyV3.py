@@ -308,7 +308,7 @@ def DisplayCandles1(CrudeData,DateIndex,Candle30Min,Candle15Min,Symbol):
     #plt.axhline(y=Close,linewidth=1, color='b',linestyle="-")
     #pio.write_image(fig, 'fig1.png')
     #plot(fig,filename="Chart.html")
-    plot(fig, filename=Symbol+"-IN-"+date1.strftime("%b-%d")+"V2.html",auto_open=False)
+    plot(fig, filename="html/"+Symbol+"-IN-"+date1.strftime("%b-%d")+"V2.html",auto_open=False)
     print(Symbol+"-IN-"+date1.strftime("%b-%d")+"V2.html")
     
 ##getPivots
@@ -443,6 +443,17 @@ def getSpecificData(History,Temp,DataIndex):
         Date2=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 23:30")
         Temp1=Temp[(Temp['Date']>parse(Date1)) & (Temp['Date']<parse(Date2))]
     return Temp1   
+
+def getSpecificData1(History,Temp,DataIndex,Incr):
+    if(DataIndex==0):
+        Date1=parse(candlestick.N1(History.iloc[DataIndex]['Date'],str(Incr)+"D","+").strftime("%Y-%m-%d 04:00"))
+        Date2 = candlestick.N1(Date1,"23H","+")
+        Temp1=Temp[(Temp['Date']>Date1) & (Temp['Date']<Date2)]
+    else:
+        Date1=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 00:00")
+        Date2=History.iloc[DataIndex-1]['Date'].strftime("%Y-%m-%d 23:30")
+        Temp1=Temp[(Temp['Date']>parse(Date1)) & (Temp['Date']<parse(Date2))]
+    return Temp1 
 
 def isInRange(History,DateIndex,Value,AllList,decimal,percentage):
     fPH=History.iloc[DateIndex]['High']
@@ -784,7 +795,7 @@ getDoji(SilverCandle5Min,DataIndex,SilverHistoryV2,0.05)
 
 #AllList=list(CrudeData.iloc[DateIndex])[6:]
 
-DataIndex=7
+DataIndex=0
 #test(LeadHistoryV1,DataIndex,3)
 #test(LeadHistoryV2,DataIndex,3)
 #LeadHistoryV1.iloc[DataIndex]
@@ -794,7 +805,8 @@ DataIndex=7
 #test(GoldHistoryV2,8)
 #
 Messages=[]
-DataIndex=1
+DataIndex=5
+TProfit=0
 while(DataIndex<=10):
     SilverHistory.iloc[DataIndex]['Date']
     test(SilverHistory,DataIndex,0)
@@ -809,8 +821,12 @@ while(DataIndex<=10):
     GF2=AllList
     GF3=fibMS
     
-    GoldData=getSpecificData(GoldHistoryV1,GoldCandle15Min,DataIndex)
-    SilverData=getSpecificData(SilverHistoryV2,SilverCandle15Min,DataIndex)
+    GoldData=getSpecificData(GoldHistoryV1,GoldCandle5Min,DataIndex)
+    SilverData=getSpecificData(SilverHistoryV2,SilverCandle5Min,DataIndex)
+    
+    #GoldData=getSpecificData1(GoldHistoryV1,GoldCandle5Min,DataIndex,4)
+    #SilverData=getSpecificData1(SilverHistoryV2,SilverCandle5Min,DataIndex,4)
+
     GoldData['high'][:3]
     i=0
     LastFoundIndex=-1
@@ -823,16 +839,26 @@ while(DataIndex<=10):
     fPL=GoldHistoryV1.iloc[DataIndex]['Low']
     GRange=fPH-fPL    
     Gtolerance=round(GRange*.01,0)
+    GMargin=round(GRange*.25,0)
+    GStoploss=round(GRange*.3,0)
+    if(GMargin>100):
+        GMargin=100
+        GStoploss=110
+        
     while(i<len(GoldData)):
-        SLL=SilverData['low'][:i+1].min()
-        SHH=SilverData['high'][:i+1].max()
+        if(i>10):
+            j=i-10
+        else:
+            j=i
+        SLL=SilverData['low'][j:i+1].min()
+        SHH=SilverData['high'][j:i+1].max()
         SL=SilverData.iloc[i]['low']
         SH=SilverData.iloc[i]['high']
         SO=SilverData.iloc[i]['open']
         SC=SilverData.iloc[i]['close']
         
-        GLL=GoldData['low'][:i+1].min()
-        GHH=GoldData['high'][:i+1].max()
+        GLL=GoldData['low'][j:i+1].min()
+        GHH=GoldData['high'][j:i+1].max()
         GL=GoldData.iloc[i]['low']
         GH=GoldData.iloc[i]['high']
         GO=GoldData.iloc[i]['open']
@@ -840,33 +866,62 @@ while(DataIndex<=10):
         if(LastFoundIndex!=-1):        
             SPL=SilverData.iloc[LastFoundIndex]['low']
             SPH=SilverData.iloc[LastFoundIndex]['high']
+            SPO=SilverData.iloc[LastFoundIndex]['open']
+            SPC=SilverData.iloc[LastFoundIndex]['close']
+            GPO=GoldData.iloc[LastFoundIndex]['open']
+            GPC=GoldData.iloc[LastFoundIndex]['close']
             GPL=GoldData.iloc[LastFoundIndex]['low']
             GPH=GoldData.iloc[LastFoundIndex]['high']
+            SPO1=SilverData.iloc[LastFoundIndex-1]['open']
+            SPC1=SilverData.iloc[LastFoundIndex-1]['close']
+            GPO1=GoldData.iloc[LastFoundIndex-1]['open']
+            GPC1=GoldData.iloc[LastFoundIndex-1]['close']
+            
             Transaction=""
             Reliability=False
             Data=GoldData    
             
             DateIndex=i
-            Margin=0.002
-            Stoploss=0.002            
+            #Margin=0.002
+            #Stoploss=0.002            
             SearchData=GoldCandle5Min
             
             if((SL>SPL) and (GL>GPL)):
                 
                 Transaction="Buy"
-                Reliability= (((GO>GC)==False) and ((SO>SC)==False))
+                Reliability= (((GO>GC)==False) and ((SO>SC)==False) and ((GPO1>GPC1)==True) and ((SPO1>SPC1)==True))
+                Reliability= (Reliability or 
+                              (
+                                      ((GO>GC)==False) and ((SO>SC)==False) and 
+                                      ((GPO1>GPC1)==False) and ((SPO1>SPC1)==False) and 
+                                      ((GPO>GPC)==False) and ((SPO>SPC)==False)
+                                      )
+                              )
                 if ((Transaction!="") and Reliability):
-                    Result=candlestick.Check(Data,Signal,DateIndex,Margin,Stoploss,SearchData)
-                    print(str(SilverData.iloc[i]['Date']) +" Buy  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
-                    Messages.append(str(SilverData.iloc[i]['Date']) +" Buy  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
+                    if(GO==GC):
+                        Transaction="Sell"
+                        
+                    Result=candlestick.Check(Data,Transaction,DateIndex,GMargin,GStoploss,SearchData)
+                    print(str(SilverData.iloc[i]['Date']) + "\t"+Transaction+"1   \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
+                    Messages.append(str(SilverData.iloc[i]['Date']) +Transaction+"1   \t" + str(GPO1>GPC1) + " < " + str(GPO>GPC) +" < " +str(GO>GC) + "\t==\t"+str(SO>SC)+" > "+str(SPO>SPC)+" > "+str(SPO1>SPC1) + " -\t " + str(Result['Profit']) + " - " + str(GO==GC))
+                    
+                    TProfit=Result['Profit']+TProfit
             if((SH<SPH) and (GH<GPH)):
                 #print(str(SilverData.iloc[i]['Date']) +" Sell \t" + str(GO>GC) + "\t"+str(SO>SC))
                 Transaction="Sell"
-                Reliability= (((GO>GC)==True) and ((SO>SC)==True))
+                Reliability= (((GO>GC)==True) and ((SO>SC)==True) and ((GPO1>GPC1)==False) and ((SPO1>SPC1)==False))
+                Reliability= (Reliability or 
+                              (
+                                      ((GO>GC)==True) and ((SO>SC)==True) and 
+                                      ((GPO1>GPC1)==True) and ((SPO1>SPC1)==True) and 
+                                      ((GPO>GPC)==True) and ((SPO>SPC)==True)
+                                      )
+                              )
                 if ((Transaction!="") and Reliability):
-                    Result=candlestick.Check(Data,Signal,DateIndex,Margin,Stoploss,SearchData)
+                    Result=candlestick.Check(Data,Transaction,DateIndex,GMargin,GStoploss,SearchData)
                     print(str(SilverData.iloc[i]['Date']) +" Sell  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
-                    Messages.append(str(SilverData.iloc[i]['Date']) +" Sell  \t" + str(GO>GC) + "\t"+str(SO>SC) + " - " + str(Result['Profit']))
+                    Messages.append(str(SilverData.iloc[i]['Date']) +" Sell  \t" + str(GPO1>GPC1) + " < " + str(GPO>GPC) +" < " +str(GO>GC) + "\t==\t"+str(SO>SC)+" > "+str(SPO>SPC)+" > "+str(SPO1>SPC1) + " -\t " + str(Result['Profit']) + " - " + str(GO==GC))
+                    TProfit=Result['Profit']+TProfit
             if(LastFoundSignal=="Buy" and ( (SPL-Stolerance <= SL <= SPL+Stolerance) or (GPL-Gtolerance <= GL <= GPL+Gtolerance))):
                 print(str(SilverData.iloc[i]['Date']) +" BUYY \t" + str(GO>GC) + "\t"+str(SO>SC))            
             if(LastFoundSignal=="Sell" and ( (SH-Stolerance <= SPH <= SH+Stolerance) or (GH-Gtolerance <= GPH <= GH+Gtolerance))):
@@ -912,6 +967,7 @@ while(DataIndex<=10):
 
 for Message in Messages:
     print(Message)
+print(TProfit)
 #
 #test(GoldHistoryV1,DataIndex,0)
 #test(GoldHistoryV2,DataIndex,0)
