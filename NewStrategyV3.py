@@ -1098,3 +1098,56 @@ print(TProfit)
 #(f.iloc[0]['H3']+f.iloc[0]['H1'])/2
 #########################################
 #
+
+
+#def swing_detection(ii,high,low):
+#    #ii=8
+#    index=ii#-7
+#    swing_high = False
+#    swing_low = False
+#    start = (index*2) - 1 # -1 so we have an even number of
+#    swing_point_high = high[index]
+#    swing_point_low = low[index]
+#    
+#    i=0
+#    while(i<start): 
+#    #Swing Highs
+#    #for i in start
+#        swing_high = True
+#        if (i < index): 
+#            if (high[i] > swing_point_high) :
+#                swing_high = False
+#                break
+#        # Have to do checks before pivot and after seperately because we can get
+#        # two highs of the same value in a row. Notice the > and >= difference
+#        if (i > index):
+#            if (high[i] >= swing_point_high): 
+#                swing_high = False
+#                break
+#        i=i+1
+#        
+#   #Swing lows
+#    i=0
+#    while(i<start):
+#        swing_low = True
+#        if (i < index):
+#            if (low[i] < swing_point_low ):
+#                swing_low = False
+#                break  
+#        # Have to do checks before pivot and after seperately because we can get
+#        # two lows of the same value in a row. Notice the > and >= difference
+#        if (i > index):
+#            if (low[i] <= swing_point_low):
+#                swing_low = False
+#                break
+#        i=i+1
+#        
+#    return swing_high, swing_low
+#
+#j=1
+#h=g['high']
+#l=g['low']
+#while(j<len(g)):
+#    a=swing_detection(j,h,l)
+#    if(a[0] or a[1]):
+#        print(str(g.iloc[j]['Date']) + " - "+ str(a[0]) + " - " + str(a[1]) )
