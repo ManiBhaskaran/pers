@@ -115,3 +115,56 @@ def getKey(mydict,ivalue):
     a = b1
     #print(a)
     return list(mydict.keys())[a]
+
+
+
+
+
+
+def getTolerance(Data,DataIndex,decimal,percent):
+    fPH=Data.iloc[DataIndex]['High']
+    fPL=Data.iloc[DataIndex]['Low']
+    Range=fPH-fPL
+    return round(Range*percent,decimal)
+
+DataIndex=2
+GL1=list(GoldHistoryV1.iloc[DataIndex])[6:]
+GL2=list(GoldHistoryV2.iloc[DataIndex])[6:]
+SL1=list(SilverHistory.iloc[DataIndex])[6:]
+SL2=list(SilverHistoryV2.iloc[DataIndex])[6:]
+
+
+LL1=list(LeadHistoryV1.iloc[DataIndex])[6:]
+LL2=list(LeadHistoryV2.iloc[DataIndex])[6:]
+
+GT=getTolerance(GoldHistoryV1,DataIndex,0,.01)
+ST=getTolerance(SilverHistory,DataIndex,0,.03)
+LT=getTolerance(LeadHistoryV1,DataIndex,2,.01)
+
+print(GoldHistoryV1.iloc[DataIndex]['Date'])
+PC=GoldHistoryV1.iloc[DataIndex]['Close']
+for G1 in GL1:
+    for G2 in GL2:
+        if(G2-GT <= G1 <= G2+GT):
+            if(abs(PC-G2)<400):
+                print(str(G1) + " - " + str(G2))
+print(GoldHistoryV1.iloc[DataIndex-1]['Open'])
+
+
+PC=SilverHistory.iloc[DataIndex]['Close']
+for G1 in SL1:
+    for G2 in SL2:
+        if(G1-ST <= G2 <= G1+ST):
+            if(abs(PC-G2)<500):
+                print(str(G1) + " - " + str(G2))
+print(SilverHistory.iloc[DataIndex-1]['Open'])
+
+PC=LeadHistoryV1.iloc[DataIndex]['Close']
+for G1 in LL1:
+    for G2 in LL2:
+        if(G1-LT <= G2 <= G1+LT):
+            if(abs(PC-G2)<5):
+                print(str(G1) + " - " + str(G2))
+print(LeadHistoryV1.iloc[DataIndex-1]['Open'])                
+
+    
